@@ -207,6 +207,21 @@ Important cart rules:
 - Cart uses the current `Product.price`.
 - If product price changes, the cart reflects the current price rather than a historical snapshot.
 
+## Wishlist Backend
+
+The wishlist is another user-owned feature on the backend.
+
+- One user can have many wishlist items.
+- Each wishlist item belongs to exactly one user and exactly one product.
+- Duplicate wishlist entries are rejected.
+- Wishlist ownership comes from the authenticated JWT user, not from any `userId` sent by the browser.
+- Wishlist items do not reserve inventory.
+- Out-of-stock products can still be wishlisted.
+- New wishlist entries are rejected if the product is inactive.
+- The wishlist displays the current `Product.price` instead of storing a price snapshot.
+- Existing wishlist items remain part of the user's wishlist even if a product later becomes inactive, and the response can mark the product as unavailable.
+- Backend validation and security remain the source of truth; the frontend only reflects the authenticated user's data.
+
 ### Start Backend
 
 ```bash
@@ -390,9 +405,7 @@ Inventory state is separate from the product catalog record.
 
 - Authentication
 - JWT
-- Product logic
-- Inventory logic
-- Cart logic
+- Wishlist logic
 - Orders
 - Payments
 - Coupons
