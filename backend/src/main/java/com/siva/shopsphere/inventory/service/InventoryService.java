@@ -58,6 +58,13 @@ public class InventoryService {
         return InventoryMapper.toResponse(inventory);
     }
 
+    @Transactional(readOnly = true)
+    public int getAvailableQuantity(UUID productId) {
+        Inventory inventory = inventoryRepository.findByProductId(productId)
+            .orElseThrow(() -> new ResourceNotFoundException("Inventory not found"));
+        return availableQuantity(inventory);
+    }
+
     @Transactional
     public InventoryResponse adjustStock(UUID productId, StockAdjustmentRequest request) {
         Inventory inventory = inventoryRepository.findByProductIdWithLock(productId)
