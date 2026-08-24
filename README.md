@@ -185,6 +185,28 @@ React UI -> Axios -> Spring Boot REST API -> PostgreSQL
 
 User and address ownership is determined by the authenticated backend user, not by any `userId` field sent from the browser.
 
+## Cart Frontend
+
+The cart UI uses the authenticated cart API.
+
+- `src/features/cart/api/cartApi.js` calls the backend cart endpoints.
+- `src/pages/CartPage.jsx` loads the user cart and coordinates add, update, remove, and clear actions.
+- `src/features/cart/components/CartItemRow.jsx` renders one cart item with quantity controls.
+- `src/features/cart/components/CartSummary.jsx` shows totals and clear-cart action.
+
+Cart flow:
+
+React UI -> Axios -> Spring Boot REST API -> PostgreSQL
+
+Important cart rules:
+
+- Cart belongs to the authenticated user.
+- Cart does not reserve inventory.
+- Stock is validated when cart quantities change.
+- Final stock reservation will happen later during checkout/order creation.
+- Cart uses the current `Product.price`.
+- If product price changes, the cart reflects the current price rather than a historical snapshot.
+
 ### Start Backend
 
 ```bash

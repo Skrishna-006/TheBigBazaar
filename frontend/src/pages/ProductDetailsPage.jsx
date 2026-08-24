@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import ErrorMessage from '../components/common/ErrorMessage';
 import LoadingSpinner from '../components/common/LoadingSpinner';
+import { useAuth } from '../features/auth/context/AuthContext';
+import { addCartItem } from '../features/cart/api/cartApi';
 import { getProductById } from '../features/products/api/productApi';
 import ProductPrice from '../features/products/components/ProductPrice';
 import { normalizeApiError } from '../utils/apiError';
@@ -11,10 +13,14 @@ const placeholderImage =
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [product, setProduct] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const [notFound, setNotFound] = useState(false);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [cartMessage, setCartMessage] = useState('');
 
   useEffect(() => {
     let mounted = true;
@@ -69,6 +75,26 @@ export default function ProductDetailsPage() {
     return null;
   }
 
+  async function handleAddToCart() {
+    if (!isAuthenticated) {
+      navigate('/login', { state: { from: { pathname: `/products/${id}` } } });
+      return;
+    }
+
+    setIsAddingToCart(true);
+    setErrorMessage('');
+    setCartMessage('');
+
+    try {
+      await addCartItem(product.id, 1);
+      setCartMessage('Added to cart.');
+    } catch (error) {
+      setErrorMessage(normalizeApiError(error).message);
+    } finally {
+      setIsAddingToCart(false);
+    }
+  }
+
   return (
     <section className="product-detail">
       <Link className="product-detail__back" to="/products">
@@ -95,7 +121,16 @@ export default function ProductDetailsPage() {
           </div>
           <ProductPrice value={product.price} />
           {product.description ? <p className="product-detail__description">{product.description}</p> : null}
-          <p className="product-detail__note">Cart coming soon.</p>
+          {cartMessage ? <div className="success-message">{cartMessage}</div> : null}
+          <div className="product-detail__actions">
+            <button type="button" className="button button--primary" onClick={handleAddToCart} disabled={isAddingToCart}>
+              {isAuthenticated ? (isAddingToCart ? 'Adding...' : 'Add to cart') : 'Login to add to cart'}
+            </button>
+            <Link className="button button--secondary" to="/cart">
+              View cart
+            </Link>
+          </div>
+          <p className="product-detail__note">Cart keeps the current product price and revalidates stock later.</p>
         </div>
       </div>
     </section>

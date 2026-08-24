@@ -38,7 +38,14 @@ export default function AppRoutes() {
         <Route path="/products/:id" element={<ProductDetailsPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
-        <Route path="/cart" element={<CartPage />} />
+        <Route
+          path="/cart"
+          element={
+            <ProtectedRoute>
+              <CartPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/profile"
           element={
