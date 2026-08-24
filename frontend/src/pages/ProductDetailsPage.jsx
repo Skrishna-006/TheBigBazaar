@@ -6,6 +6,7 @@ import { useAuth } from '../features/auth/context/AuthContext';
 import { addCartItem } from '../features/cart/api/cartApi';
 import { getProductById } from '../features/products/api/productApi';
 import ProductPrice from '../features/products/components/ProductPrice';
+import WishlistButton from '../features/wishlist/components/WishlistButton';
 import { normalizeApiError } from '../utils/apiError';
 
 const placeholderImage =
@@ -126,6 +127,7 @@ export default function ProductDetailsPage() {
             <button type="button" className="button button--primary" onClick={handleAddToCart} disabled={isAddingToCart}>
               {isAuthenticated ? (isAddingToCart ? 'Adding...' : 'Add to cart') : 'Login to add to cart'}
             </button>
+            <WishlistButton productId={product.id} productName={product.name} />
             <Link className="button button--secondary" to="/cart">
               View cart
             </Link>

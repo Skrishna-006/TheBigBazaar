@@ -8,6 +8,7 @@ import AddressesPage from '../pages/AddressesPage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import CartPage from '../pages/CartPage';
+import WishlistPage from '../pages/WishlistPage';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
 import { useAuth } from '../features/auth/context/AuthContext';
@@ -43,6 +44,14 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <CartPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/wishlist"
+          element={
+            <ProtectedRoute>
+              <WishlistPage />
             </ProtectedRoute>
           }
         />
