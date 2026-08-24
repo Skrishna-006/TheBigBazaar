@@ -141,6 +141,10 @@ export function AuthProvider({ children }) {
 
   const isAdmin = useCallback(() => hasRole('ADMIN'), [hasRole]);
 
+  const syncUser = useCallback((nextUser) => {
+    setUser(nextUser);
+  }, []);
+
   const value = useMemo(
     () => ({
       user,
@@ -152,8 +156,9 @@ export function AuthProvider({ children }) {
       refreshAuthentication,
       hasRole,
       isAdmin,
+      syncUser,
     }),
-    [user, isLoading, login, register, logout, refreshAuthentication, hasRole, isAdmin]
+    [user, isLoading, login, register, logout, refreshAuthentication, hasRole, isAdmin, syncUser]
   );
 
   if (isLoading) {

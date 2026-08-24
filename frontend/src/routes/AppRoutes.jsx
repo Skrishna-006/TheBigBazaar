@@ -3,6 +3,8 @@ import MainLayout from '../layouts/MainLayout';
 import HomePage from '../pages/HomePage';
 import ProductsPage from '../pages/ProductsPage';
 import ProductDetailsPage from '../pages/ProductDetailsPage';
+import ProfilePage from '../pages/ProfilePage';
+import AddressesPage from '../pages/AddressesPage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import CartPage from '../pages/CartPage';
@@ -41,7 +43,7 @@ export default function AppRoutes() {
           path="/profile"
           element={
             <ProtectedRoute>
-              <Placeholder title="Profile" message="Profile management will be implemented in a later phase." />
+              <ProfilePage />
             </ProtectedRoute>
           }
         />
@@ -49,7 +51,7 @@ export default function AppRoutes() {
           path="/addresses"
           element={
             <ProtectedRoute>
-              <Placeholder title="Addresses" message="Address management will be implemented in a later phase." />
+              <AddressesPage />
             </ProtectedRoute>
           }
         />

@@ -164,6 +164,27 @@ Route choice:
 
 The frontend uses the product ID for the detail URL to keep the first catalog implementation simple. The backend also supports slug-based product lookup, so a slug-based route can be added later if needed.
 
+## User Profile Frontend
+
+The authenticated user area is built around the existing backend profile API.
+
+- `src/features/users/api/userApi.js` handles `GET /api/v1/users/me`, `PUT /api/v1/users/me`, and `PUT /api/v1/users/me/password`.
+- `src/pages/ProfilePage.jsx` shows the current profile and includes forms for updating profile details and changing the password.
+- The profile UI only edits fields that the backend allows, such as first name, last name, phone number, and avatar URL.
+
+## Address Frontend
+
+The address UI uses the authenticated backend address API.
+
+- `src/features/addresses/api/addressApi.js` handles address retrieval and CRUD operations.
+- `src/pages/AddressesPage.jsx` lists the user’s addresses and coordinates add, edit, delete, and set-default actions.
+- `src/features/addresses/components/AddressCard.jsx` displays one address.
+- `src/features/addresses/components/AddressForm.jsx` is reused for both create and edit mode.
+
+React UI -> Axios -> Spring Boot REST API -> PostgreSQL
+
+User and address ownership is determined by the authenticated backend user, not by any `userId` field sent from the browser.
+
 ### Start Backend
 
 ```bash

@@ -39,7 +39,10 @@ export default function Header() {
           ) : (
             <>
               <NavLink to="/profile" className={({ isActive }) => `site-nav__link${isActive ? ' site-nav__link--active' : ''}`}>
-                {user?.firstName || user?.email || 'Profile'}
+                Profile
+              </NavLink>
+              <NavLink to="/addresses" className={({ isActive }) => `site-nav__link${isActive ? ' site-nav__link--active' : ''}`}>
+                Addresses
               </NavLink>
               {isAdmin() ? (
                 <NavLink to="/admin" className={({ isActive }) => `site-nav__link${isActive ? ' site-nav__link--active' : ''}`}>

@@ -12,6 +12,9 @@ export default function HomePage() {
         <Link className="button button--primary" to="/products">
           Shop Products
         </Link>
+        <Link className="button button--secondary" to="/profile">
+          View Profile
+        </Link>
         <Link className="button button--secondary" to="/register">
           Create Account
         </Link>
