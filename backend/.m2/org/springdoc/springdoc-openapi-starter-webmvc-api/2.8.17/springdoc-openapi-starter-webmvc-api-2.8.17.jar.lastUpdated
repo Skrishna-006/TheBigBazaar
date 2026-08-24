@@ -1,0 +1,5 @@
+#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
+#Mon Aug 24 09:05:04 IST 2026
+@default-spring-milestones-https\://repo.spring.io/milestone/.lastUpdated=1787542130418
+https\://repo.maven.apache.org/maven2/.lastUpdated=1787542504742
+https\://repo.spring.io/milestone/.error=Could not transfer artifact org.springdoc\:springdoc-openapi-starter-webmvc-api\:jar\:2.8.17 from/to spring-milestones (https\://repo.spring.io/milestone)\: No such host is known (repo.spring.io)
