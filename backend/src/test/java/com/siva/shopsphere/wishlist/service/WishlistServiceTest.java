@@ -104,7 +104,7 @@ class WishlistServiceTest {
 
         wishlistService.removeItem(product.getId());
 
-        verify(wishlistItemRepository).delete(item);
+        verify(wishlistItemRepository).deleteByUserIdAndProductId(user.getId(), product.getId());
     }
 
     @Test

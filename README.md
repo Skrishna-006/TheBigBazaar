@@ -222,6 +222,21 @@ The wishlist is another user-owned feature on the backend.
 - Existing wishlist items remain part of the user's wishlist even if a product later becomes inactive, and the response can mark the product as unavailable.
 - Backend validation and security remain the source of truth; the frontend only reflects the authenticated user's data.
 
+## Orders Backend
+
+Orders capture a historical snapshot of what the customer purchased.
+
+- A customer creates an order from the authenticated cart.
+- The backend validates the selected shipping address belongs to that customer.
+- Order items snapshot product name, SKU, image URL, unit price, and quantity so future catalog changes do not affect old orders.
+- Shipping details are also snapshotted on the order so deleted or edited addresses do not change historical records.
+- Order creation uses the backend price and inventory state, not values supplied by the frontend.
+- Inventory is reduced when the order is created, and the stock change is recorded as an inventory movement.
+- The cart is cleared only after the full order transaction succeeds.
+- Customers can list and view only their own orders.
+- Admin users can view and update order status across all users.
+- Payment processing is not implemented yet. In this phase, creating the order represents successful placement before payment integration arrives later.
+
 ### Start Backend
 
 ```bash

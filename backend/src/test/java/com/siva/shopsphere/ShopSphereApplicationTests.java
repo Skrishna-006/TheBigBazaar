@@ -10,11 +10,13 @@ import com.siva.shopsphere.cart.repository.CartItemRepository;
 import com.siva.shopsphere.cart.repository.CartRepository;
 import com.siva.shopsphere.inventory.repository.InventoryMovementRepository;
 import com.siva.shopsphere.inventory.repository.InventoryRepository;
+import com.siva.shopsphere.orders.repository.OrderRepository;
 import com.siva.shopsphere.products.repository.BrandRepository;
 import com.siva.shopsphere.products.repository.CategoryRepository;
 import com.siva.shopsphere.products.repository.ProductRepository;
 import com.siva.shopsphere.inventory.service.InventoryService;
 import com.siva.shopsphere.security.CurrentUserService;
+import com.siva.shopsphere.wishlist.repository.WishlistItemRepository;
 
 @SpringBootTest(properties = {
     "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"
@@ -47,6 +49,12 @@ class ShopSphereApplicationTests {
 
     @MockBean
     private CartItemRepository cartItemRepository;
+
+    @MockBean
+    private OrderRepository orderRepository;
+
+    @MockBean
+    private WishlistItemRepository wishlistItemRepository;
 
     @MockBean
     private InventoryService inventoryService;
