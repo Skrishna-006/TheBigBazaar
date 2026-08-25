@@ -427,3 +427,21 @@ Inventory state is separate from the product catalog record.
 - Reviews
 - Notifications
 - Analytics
+
+## Checkout Frontend
+
+Checkout is a protected React flow that loads the authenticated user's cart and saved addresses, lets the user choose a shipping address, reviews the cart contents, and places the order by sending only `addressId` to the backend.
+
+- The backend remains authoritative for prices, totals, and inventory validation.
+- The frontend does not send subtotal, shipping, discount, or total values.
+- When the cart is empty, checkout shows a friendly empty state and links back to products.
+- When no address exists, checkout directs the user to the address management page.
+
+## Orders Frontend
+
+Orders are protected customer pages for browsing order history and viewing order snapshots.
+
+- `/orders` lists the authenticated user's orders.
+- `/orders/:id` shows order details, shipping snapshot, items, and totals.
+- Cancellation is exposed only when the backend allows it.
+- Order details always come from the backend snapshot response, not the current product or address tables.

@@ -44,6 +44,9 @@ export default function Header() {
               <NavLink to="/wishlist" className={({ isActive }) => `site-nav__link${isActive ? ' site-nav__link--active' : ''}`}>
                 Wishlist
               </NavLink>
+              <NavLink to="/orders" className={({ isActive }) => `site-nav__link${isActive ? ' site-nav__link--active' : ''}`}>
+                Orders
+              </NavLink>
               <NavLink to="/addresses" className={({ isActive }) => `site-nav__link${isActive ? ' site-nav__link--active' : ''}`}>
                 Addresses
               </NavLink>
