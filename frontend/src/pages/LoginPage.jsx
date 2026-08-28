@@ -63,7 +63,7 @@ export default function LoginPage() {
       navigate(from, { replace: true });
     } catch (error) {
       const normalized = normalizeApiError(error);
-      setErrorMessage(normalized.message === 'Unexpected error' ? 'Invalid email or password.' : normalized.message);
+      setErrorMessage(normalized.message || 'Invalid email or password.');
       setFieldErrors(normalized.fieldErrors || {});
     } finally {
       setIsSubmitting(false);

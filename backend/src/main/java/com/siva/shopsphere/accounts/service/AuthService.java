@@ -3,6 +3,7 @@ package com.siva.shopsphere.accounts.service;
 import java.util.Locale;
 
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -60,13 +61,17 @@ public class AuthService {
 
     public AuthResponse login(LoginRequest request) {
         String email = normalizeEmail(request.email());
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(email, request.password())
-        );
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, request.password())
+            );
+        } catch (AuthenticationException ex) {
+            throw new UnauthorizedException("Invalid email or password.");
+        }
         User user = userRepository.findByEmail(email)
-            .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
+            .orElseThrow(() -> new UnauthorizedException("Invalid email or password."));
         if (!user.isActive()) {
-            throw new UnauthorizedException("Invalid email or password");
+            throw new UnauthorizedException("Invalid email or password.");
         }
         return buildAuthResponse(user);
     }

@@ -3,14 +3,18 @@ import { Link, useParams } from 'react-router-dom';
 import ErrorMessage from '../components/common/ErrorMessage';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { cancelOrder, getOrderById } from '../features/orders/api/orderApi';
+import { getOrderPayment } from '../features/payments/api/paymentApi';
 import OrderItem from '../features/orders/components/OrderItem';
 import OrderStatusBadge from '../features/orders/components/OrderStatusBadge';
 import OrderSummary from '../features/orders/components/OrderSummary';
+import PaymentStatus from '../features/payments/components/PaymentStatus';
+import ProductPrice from '../features/products/components/ProductPrice';
 import { normalizeApiError } from '../utils/apiError';
 
 export default function OrderDetailsPage() {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
+  const [payment, setPayment] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isCancelling, setIsCancelling] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -27,6 +31,20 @@ export default function OrderDetailsPage() {
         const data = await getOrderById(id);
         if (mounted) {
           setOrder(data);
+        }
+        try {
+          const paymentData = await getOrderPayment(id);
+          if (mounted) {
+            setPayment(paymentData);
+          }
+        } catch (paymentError) {
+          const normalizedPayment = normalizeApiError(paymentError);
+          if (mounted && normalizedPayment.status !== 404) {
+            setErrorMessage(normalizedPayment.message);
+          }
+          if (mounted) {
+            setPayment(null);
+          }
         }
       } catch (error) {
         const normalized = normalizeApiError(error);
@@ -118,6 +136,38 @@ export default function OrderDetailsPage() {
               <OrderStatusBadge status={order.status} />
             </div>
           </section>
+
+          {payment ? (
+            <section className="page-card">
+              <div className="order-details__status">
+                <h2>Payment status</h2>
+                <PaymentStatus status={payment.status} />
+              </div>
+              <dl className="payment-summary">
+                <div>
+                  <dt>Method</dt>
+                  <dd>{payment.paymentMethod}</dd>
+                </div>
+                <div>
+                  <dt>Amount</dt>
+                  <dd><ProductPrice value={payment.amount} /></dd>
+                </div>
+                {payment.providerReference ? (
+                  <div>
+                    <dt>Reference</dt>
+                    <dd>{payment.providerReference}</dd>
+                  </div>
+                ) : null}
+              </dl>
+              {['FAILED', 'CANCELLED'].includes(payment.status) ? (
+                <div className="payment-result__actions">
+                  <Link className="button button--primary" to={`/payment/${order.id}`}>
+                    Retry payment
+                  </Link>
+                </div>
+              ) : null}
+            </section>
+          ) : null}
 
           <section className="page-card">
             <h2>Shipping information</h2>

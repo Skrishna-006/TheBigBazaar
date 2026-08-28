@@ -11,9 +11,20 @@ import CartPage from '../pages/CartPage';
 import WishlistPage from '../pages/WishlistPage';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
+import AdminLayout from '../layouts/AdminLayout';
 import { useAuth } from '../features/auth/context/AuthContext';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import EmptyState from '../components/common/EmptyState';
+import AdminDashboardPage from '../pages/admin/AdminDashboardPage';
+import AdminCategoriesPage from '../pages/admin/AdminCategoriesPage';
+import AdminBrandsPage from '../pages/admin/AdminBrandsPage';
+import AdminProductsPage from '../pages/admin/AdminProductsPage';
+import AdminInventoryPage from '../pages/admin/AdminInventoryPage';
+import AdminOrdersPage from '../pages/admin/AdminOrdersPage';
+import AdminOrderDetailsPage from '../pages/admin/AdminOrderDetailsPage';
+import PaymentPage from '../pages/PaymentPage';
+import PaymentSuccessPage from '../pages/PaymentSuccessPage';
+import PaymentFailurePage from '../pages/PaymentFailurePage';
 
 function Placeholder({ title, message }) {
   return (
@@ -72,13 +83,47 @@ export default function AppRoutes() {
           }
         />
         <Route
-          path="/admin"
+          path="/payment/:orderId"
           element={
-            <AdminRoute>
-              <EmptyState title="Admin area" message="Admin features will be added in a later phase." />
-            </AdminRoute>
+            <ProtectedRoute>
+              <PaymentPage />
+            </ProtectedRoute>
           }
         />
+        <Route
+          path="/payment/success/:orderId"
+          element={
+            <ProtectedRoute>
+              <PaymentSuccessPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/payment/failure/:orderId"
+          element={
+            <ProtectedRoute>
+              <PaymentFailurePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <AdminLayout />
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="categories" element={<AdminCategoriesPage />} />
+          <Route path="brands" element={<AdminBrandsPage />} />
+          <Route path="products" element={<AdminProductsPage />} />
+          <Route path="inventory" element={<AdminInventoryPage />} />
+          <Route path="orders" element={<AdminOrdersPage />} />
+          <Route path="orders/:id" element={<AdminOrderDetailsPage />} />
+        </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

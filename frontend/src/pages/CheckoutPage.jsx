@@ -71,7 +71,7 @@ export default function CheckoutPage() {
     setIsPlacingOrder(true);
     try {
       const order = await createOrder(selectedAddressId);
-      navigate(`/orders/${order.id}`, { replace: true });
+      navigate(`/payment/${order.id}`, { replace: true });
     } catch (error) {
       setErrorMessage(normalizeApiError(error).message);
     } finally {

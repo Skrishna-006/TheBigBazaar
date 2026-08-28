@@ -11,6 +11,8 @@ import com.siva.shopsphere.cart.repository.CartRepository;
 import com.siva.shopsphere.inventory.repository.InventoryMovementRepository;
 import com.siva.shopsphere.inventory.repository.InventoryRepository;
 import com.siva.shopsphere.orders.repository.OrderRepository;
+import com.siva.shopsphere.payments.gateway.PaymentGateway;
+import com.siva.shopsphere.payments.repository.PaymentRepository;
 import com.siva.shopsphere.products.repository.BrandRepository;
 import com.siva.shopsphere.products.repository.CategoryRepository;
 import com.siva.shopsphere.products.repository.ProductRepository;
@@ -52,6 +54,12 @@ class ShopSphereApplicationTests {
 
     @MockBean
     private OrderRepository orderRepository;
+
+    @MockBean
+    private PaymentRepository paymentRepository;
+
+    @MockBean
+    private PaymentGateway paymentGateway;
 
     @MockBean
     private WishlistItemRepository wishlistItemRepository;

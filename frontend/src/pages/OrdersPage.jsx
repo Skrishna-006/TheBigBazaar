@@ -5,10 +5,12 @@ import ErrorMessage from '../components/common/ErrorMessage';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import { getOrders } from '../features/orders/api/orderApi';
 import OrderCard from '../features/orders/components/OrderCard';
+import { getOrderPayment } from '../features/payments/api/paymentApi';
 import { normalizeApiError } from '../utils/apiError';
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState([]);
+  const [paymentStatusByOrderId, setPaymentStatusByOrderId] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -22,6 +24,21 @@ export default function OrdersPage() {
         const data = await getOrders();
         if (mounted) {
           setOrders(data || []);
+        }
+        const statuses = {};
+        await Promise.allSettled((data || []).map(async (order) => {
+          try {
+            const payment = await getOrderPayment(order.id);
+            statuses[order.id] = payment.status;
+          } catch (error) {
+            const normalized = normalizeApiError(error);
+            if (normalized.status !== 404) {
+              statuses[order.id] = 'ERROR';
+            }
+          }
+        }));
+        if (mounted) {
+          setPaymentStatusByOrderId(statuses);
         }
       } catch (error) {
         if (mounted) {
@@ -75,7 +92,7 @@ export default function OrdersPage() {
 
       <div className="orders-grid">
         {sortedOrders.map((order) => (
-          <OrderCard key={order.id} order={order} />
+          <OrderCard key={order.id} order={order} paymentStatus={paymentStatusByOrderId[order.id]} />
         ))}
       </div>
     </section>

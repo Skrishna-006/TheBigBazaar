@@ -237,6 +237,124 @@ Orders capture a historical snapshot of what the customer purchased.
 - Admin users can view and update order status across all users.
 - Payment processing is not implemented yet. In this phase, creating the order represents successful placement before payment integration arrives later.
 
+## Payments
+
+ShopSphere uses a separate payment domain that sits on top of orders.
+
+- `src/main/java/com/siva/shopsphere/payments/entity/Payment.java` stores the payment record.
+- `PaymentStatus` uses explicit lifecycle states: `PENDING`, `AUTHORIZED`, `PAID`, `FAILED`, `CANCELLED`, and `REFUNDED`.
+- `PaymentMethod` keeps the payment method extensible while staying explicit.
+- `PaymentGateway` is the integration boundary for provider-specific behavior.
+- `DevelopmentPaymentGateway` is the current provider implementation, and it is mock/development only.
+- `PaymentService` owns payment creation, ownership checks, status transitions, and order synchronization.
+- `PaymentController` exposes the authenticated payment APIs.
+
+Payment architecture:
+
+Order -> Payment -> PaymentGateway abstraction -> development/mock gateway
+
+Important behavior:
+
+- The backend always uses `Order.totalAmount` as the authoritative payment amount.
+- Payment records never store card numbers, CVV, PINs, or other sensitive credentials.
+- A customer can only access payments for their own order unless the backend role rules allow broader admin access.
+- Because the current order flow already deducts inventory when the order is created, a failed payment cancels the order through the existing order flow instead of introducing a full inventory reservation rewrite.
+
+Payment flow:
+
+1. The customer places an order through the existing checkout flow.
+2. The backend creates the order and deducts inventory.
+3. The customer initiates payment for that order.
+4. The development gateway returns a simulated success or failure result.
+5. On success, the payment is marked `PAID` and the order moves forward.
+6. On failure, the payment is marked `FAILED` and the order is cancelled through the existing order cancellation behavior.
+
+Available endpoints:
+
+- `POST /api/v1/payments/orders/{orderId}`
+- `GET /api/v1/payments/{paymentId}`
+- `GET /api/v1/orders/{orderId}/payment`
+
+This phase does not integrate a real payment provider. A production gateway can be added later without changing the payment domain model.
+
+## Payments Frontend
+
+The payment UI is implemented in React and stays aligned with the backend payment contract.
+
+- `src/features/payments/api/paymentApi.js` wraps the payment endpoints with the centralized Axios client.
+- `src/pages/PaymentPage.jsx` loads the current order, shows the backend-authoritative total, and initiates a payment attempt.
+- `src/features/payments/components/PaymentMethodSelector.jsx` lets the user choose a method without collecting sensitive credentials.
+- `src/features/payments/components/PaymentStatus.jsx` renders payment lifecycle states consistently.
+- `src/pages/PaymentSuccessPage.jsx` and `src/pages/PaymentFailurePage.jsx` show the result of a payment attempt.
+
+Frontend payment routes:
+
+- `/payment/:orderId`
+- `/payment/success/:orderId`
+- `/payment/failure/:orderId`
+
+Important frontend behavior:
+
+- Checkout creates the order first, then navigates to the payment page.
+- The frontend never calculates the authoritative payment amount; it always displays `Order.totalAmount` from the backend.
+- A payment attempt uses an idempotency key so accidental double submissions do not create duplicate payments.
+- The frontend does not collect or store card numbers, CVV, UPI PINs, or other sensitive payment credentials.
+- The UI works with the development/mock gateway only and does not imply real payment provider support.
+
+## Checkout Frontend
+
+The checkout flow is implemented in React and uses the existing cart and address APIs.
+
+- `src/pages/CheckoutPage.jsx` loads the current cart and saved addresses.
+- The user selects one shipping address and reviews the cart items and totals.
+- `src/features/orders/api/orderApi.js` submits the selected `addressId` to the backend order API.
+- The backend remains authoritative for totals, inventory checks, and order creation.
+
+Checkout flow:
+
+Cart -> Checkout -> Select Shipping Address -> Review Order -> Place Order -> Payment -> Order Details
+
+## Orders Frontend
+
+The customer order UI is built around the backend order APIs.
+
+- `src/pages/OrdersPage.jsx` lists the authenticated user's orders.
+- `src/pages/OrderDetailsPage.jsx` shows the historical snapshot for one order.
+- `src/features/orders/components/OrderStatusBadge.jsx` displays the current order status.
+- `src/features/orders/components/OrderItem.jsx` and `src/features/orders/components/OrderSummary.jsx` render the order detail view.
+- `src/features/payments/components/PaymentStatus.jsx` shows the separate payment lifecycle where available.
+- Cancellation uses the backend cancel endpoint when the current order status allows it.
+
+Orders flow:
+
+React UI -> Axios -> Spring Boot REST API -> PostgreSQL
+
+The frontend always renders the backend order snapshot instead of reconstructing historical data from current products or addresses.
+
+## Admin Frontend
+
+The admin area is protected by the existing authentication flow plus role-based route guarding.
+
+- `src/layouts/AdminLayout.jsx` provides the admin shell with navigation.
+- `src/pages/admin/AdminDashboardPage.jsx` shows a lightweight operational dashboard from existing list endpoints.
+- `src/pages/admin/AdminCategoriesPage.jsx` manages categories.
+- `src/pages/admin/AdminBrandsPage.jsx` manages brands.
+- `src/pages/admin/AdminProductsPage.jsx` manages products.
+- `src/pages/admin/AdminInventoryPage.jsx` manages inventory and movement history.
+- `src/pages/admin/AdminOrdersPage.jsx` and `src/pages/admin/AdminOrderDetailsPage.jsx` manage orders.
+
+Admin routes:
+
+- `/admin`
+- `/admin/categories`
+- `/admin/brands`
+- `/admin/products`
+- `/admin/inventory`
+- `/admin/orders`
+- `/admin/orders/:id`
+
+Admin authorization remains enforced by Spring Security on the backend. The frontend route guard is only a usability layer.
+
 ### Start Backend
 
 ```bash

@@ -16,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -107,12 +108,35 @@ class AuthServiceTest {
     }
 
     @Test
+    void loginWithWrongPasswordReturnsUnauthorizedWithoutLeakingDetails() {
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+            .thenThrow(new BadCredentialsException("Bad credentials"));
+
+        assertThatThrownBy(() -> authService.login(new LoginRequest("customer@example.com", "WrongPassword@123")))
+            .isInstanceOf(UnauthorizedException.class)
+            .hasMessage("Invalid email or password.");
+    }
+
+    @Test
+    void loginWithUnknownEmailReturnsUnauthorizedWithoutLeakingDetails() {
+        when(userRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
+
+        AuthResponse response = null;
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenAnswer(invocation -> null);
+
+        assertThatThrownBy(() -> authService.login(new LoginRequest("unknown@example.com", "Password@123")))
+            .isInstanceOf(UnauthorizedException.class)
+            .hasMessage("Invalid email or password.");
+    }
+
+    @Test
     void inactiveUserCannotLogin() {
         sampleUser.setActive(false);
         when(userRepository.findByEmail("customer@example.com")).thenReturn(Optional.of(sampleUser));
 
         assertThatThrownBy(() -> authService.login(new LoginRequest("customer@example.com", "Password@123")))
-            .isInstanceOf(UnauthorizedException.class);
+            .isInstanceOf(UnauthorizedException.class)
+            .hasMessage("Invalid email or password.");
     }
 
     @Test
