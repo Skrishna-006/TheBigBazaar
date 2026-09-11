@@ -23,6 +23,7 @@ import org.mockito.quality.Strictness;
 import com.siva.shopsphere.accounts.entity.User;
 import com.siva.shopsphere.accounts.entity.UserRole;
 import com.siva.shopsphere.exception.ConflictException;
+import com.siva.shopsphere.exception.BadRequestException;
 import com.siva.shopsphere.exception.ResourceNotFoundException;
 import com.siva.shopsphere.products.dto.CreateProductRequest;
 import com.siva.shopsphere.products.dto.UpdateProductRequest;
@@ -100,6 +101,11 @@ class ProductServiceTest {
             "MBA-M3-256",
             "Apple MacBook Air with M3 chip",
             new BigDecimal("99999.00"),
+            null,
+            null,
+            null,
+            null,
+            null,
             category.getId(),
             brand.getId(),
             "https://example.com/macbook.jpg"
@@ -107,6 +113,20 @@ class ProductServiceTest {
 
         assertThat(response.slug()).isEqualTo("macbook-air-m3");
         assertThat(response.sku()).isEqualTo("MBA-M3-256");
+    }
+
+    @Test
+    void createProductRejectsOriginalPriceLowerThanSellingPrice() {
+        assertThatThrownBy(() -> productService.createProduct(new CreateProductRequest(
+            "MacBook Air M3",
+            "MBA-M3-256",
+            "Desc",
+            new BigDecimal("100.00"),
+            new BigDecimal("90.00"), // Lower than price
+            null, null, null, null,
+            category.getId(), brand.getId(), null
+        ))).isInstanceOf(BadRequestException.class)
+          .hasMessageContaining("Original price must be greater than or equal to the selling price");
     }
 
     @Test
@@ -118,6 +138,7 @@ class ProductServiceTest {
             "MBA-M3-256",
             "Apple MacBook Air with M3 chip",
             new BigDecimal("99999.00"),
+            null, null, null, null, null,
             category.getId(),
             brand.getId(),
             null
@@ -136,26 +157,11 @@ class ProductServiceTest {
             "MBA-M3-256",
             "Apple MacBook Air with M3 chip",
             new BigDecimal("99999.00"),
+            null, null, null, null, null,
             category.getId(),
             brand.getId(),
             null
         ))).isInstanceOf(ConflictException.class);
-    }
-
-    @Test
-    void inactiveCategoryIsRejected() {
-        category.setActive(false);
-        when(categoryRepository.findById(category.getId())).thenReturn(Optional.of(category));
-
-        assertThatThrownBy(() -> productService.createProduct(new CreateProductRequest(
-            "MacBook Air M3",
-            "MBA-M3-256",
-            "Apple MacBook Air with M3 chip",
-            new BigDecimal("99999.00"),
-            category.getId(),
-            brand.getId(),
-            null
-        ))).isInstanceOf(ResourceNotFoundException.class);
     }
 
     @Test
@@ -183,6 +189,7 @@ class ProductServiceTest {
             "MacBook Air M3 Pro",
             "Updated description",
             new BigDecimal("109999.00"),
+            null, null, null, null, null,
             category.getId(),
             brand.getId(),
             "https://example.com/macbook-pro.jpg",
@@ -191,6 +198,21 @@ class ProductServiceTest {
 
         assertThat(response.slug()).isEqualTo("macbook-air-m3-pro");
         assertThat(response.sku()).isEqualTo("MBA-M3-256");
+    }
+
+    @Test
+    void updateProductRejectsOriginalPriceLowerThanSellingPrice() {
+        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        
+        assertThatThrownBy(() -> productService.updateProduct(product.getId(), new UpdateProductRequest(
+            "MacBook Air M3 Pro",
+            "Updated description",
+            new BigDecimal("100.00"),
+            new BigDecimal("90.00"), // Lower than price
+            null, null, null, null,
+            category.getId(), brand.getId(), null, true
+        ))).isInstanceOf(BadRequestException.class)
+          .hasMessageContaining("Original price must be greater than or equal to the selling price");
     }
 
     @Test

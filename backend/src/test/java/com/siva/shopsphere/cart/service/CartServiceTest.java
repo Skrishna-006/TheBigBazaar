@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -75,6 +76,27 @@ class CartServiceTest {
     }
 
     @Test
+    void getCartWithExistingCartAndProductReturnsCartResponse() {
+        User user = user();
+        Cart cart = cart(user);
+        Product product = product();
+        CartItem item = cartItem(cart, product, 2);
+
+        when(currentUserService.getCurrentUser()).thenReturn(user);
+        when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
+        when(cartRepository.findById(cart.getId())).thenReturn(Optional.of(cart));
+        when(cartItemRepository.findAllByCartIdOrderByCreatedAtAsc(cart.getId())).thenReturn(List.of(item));
+
+        CartResponse response = cartService.getCart();
+
+        assertThat(response.items()).hasSize(1);
+        assertThat(response.totalItemCount()).isEqualTo(2);
+        assertThat(response.items().get(0).productId()).isEqualTo(product.getId());
+        assertThat(response.items().get(0).productName()).isEqualTo("MacBook Air M3");
+        assertThat(response.subtotal()).isEqualByComparingTo("19998.00");
+    }
+
+    @Test
     void addItemIncreasesQuantityWhenProductAlreadyExists() {
         User user = user();
         Product product = product();
@@ -121,6 +143,31 @@ class CartServiceTest {
     }
 
     @Test
+    void addProductWithoutInventoryRejected() {
+        User user = user();
+        Product product = product();
+        when(currentUserService.getCurrentUser()).thenReturn(user);
+        when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart(user)));
+        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(inventoryService.getAvailableQuantity(product.getId()))
+            .thenThrow(new ResourceNotFoundException("Inventory not found"));
+
+        assertThrows(ResourceNotFoundException.class, () -> cartService.addItem(new AddCartItemRequest(product.getId(), 1)));
+    }
+
+    @Test
+    void addInactiveProductRejectedWithNotFound() {
+        User user = user();
+        Product product = product();
+        product.setActive(false);
+        when(currentUserService.getCurrentUser()).thenReturn(user);
+        when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart(user)));
+        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+
+        assertThrows(ResourceNotFoundException.class, () -> cartService.addItem(new AddCartItemRequest(product.getId(), 1)));
+    }
+
+    @Test
     void updateMissingItemRejected() {
         User user = user();
         Product product = product();
@@ -131,6 +178,33 @@ class CartServiceTest {
         when(cartItemRepository.findByCartIdAndProductId(any(), any())).thenReturn(Optional.empty());
 
         assertThrows(ResourceNotFoundException.class, () -> cartService.updateItemQuantity(product.getId(), new UpdateCartItemRequest(2)));
+    }
+
+    @Test
+    void updateItemBeyondAvailableStockRejected() {
+        User user = user();
+        Product product = product();
+        Cart cart = cart(user);
+        CartItem existing = cartItem(cart, product, 1);
+        when(currentUserService.getCurrentUser()).thenReturn(user);
+        when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
+        when(productRepository.findById(product.getId())).thenReturn(Optional.of(product));
+        when(inventoryService.getAvailableQuantity(product.getId())).thenReturn(2);
+        when(cartItemRepository.findByCartIdAndProductId(cart.getId(), product.getId())).thenReturn(Optional.of(existing));
+
+        assertThrows(ConflictException.class, () -> cartService.updateItemQuantity(product.getId(), new UpdateCartItemRequest(3)));
+    }
+
+    @Test
+    void removeMissingItemStillTargetsUserCart() {
+        User user = user();
+        Cart cart = cart(user);
+        when(currentUserService.getCurrentUser()).thenReturn(user);
+        when(cartRepository.findByUserId(user.getId())).thenReturn(Optional.of(cart));
+
+        cartService.removeItem(UUID.fromString("11111111-1111-1111-1111-111111111111"));
+
+        verify(cartItemRepository).deleteByCartIdAndProductId(cart.getId(), UUID.fromString("11111111-1111-1111-1111-111111111111"));
     }
 
     @Test
@@ -158,12 +232,12 @@ class CartServiceTest {
         cart.setUser(user);
         cart.setCreatedAt(Instant.now());
         cart.setUpdatedAt(Instant.now());
-        cart.setItems(List.of());
+        cart.setItems(new ArrayList<>());
         return cart;
     }
 
     private Cart cart(Cart cart, List<CartItem> items) {
-        cart.setItems(items);
+        cart.setItems(new ArrayList<>(items));
         return cart;
     }
 

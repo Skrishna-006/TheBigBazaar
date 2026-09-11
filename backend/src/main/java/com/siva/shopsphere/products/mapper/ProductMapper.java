@@ -13,12 +13,18 @@ public final class ProductMapper {
 
     public static Product toEntity(CreateProductRequest request) {
         Product product = new Product();
-        apply(product, request.name(), request.description(), request.price(), request.imageUrl(), null);
+        apply(
+            product, request.name(), request.description(), request.price(), request.imageUrl(), null,
+            request.originalPrice(), request.deliveryCharge(), request.deliveryDays(), request.rating(), request.reviewCount()
+        );
         return product;
     }
 
     public static void updateEntity(Product product, UpdateProductRequest request) {
-        apply(product, request.name(), request.description(), request.price(), request.imageUrl(), request.active());
+        apply(
+            product, request.name(), request.description(), request.price(), request.imageUrl(), request.active(),
+            request.originalPrice(), request.deliveryCharge(), request.deliveryDays(), request.rating(), request.reviewCount()
+        );
     }
 
     public static ProductResponse toResponse(Product product) {
@@ -29,6 +35,11 @@ public final class ProductMapper {
             product.getSku(),
             product.getDescription(),
             product.getPrice(),
+            product.getOriginalPrice(),
+            product.getDeliveryCharge(),
+            product.getDeliveryDays(),
+            product.getRating(),
+            product.getReviewCount(),
             new ProductCategoryResponse(
                 product.getCategory().getId(),
                 product.getCategory().getName(),
@@ -46,12 +57,20 @@ public final class ProductMapper {
         );
     }
 
-    private static void apply(Product product, String name, String description, java.math.BigDecimal price, String imageUrl, Boolean active) {
+    private static void apply(
+            Product product, String name, String description, java.math.BigDecimal price, String imageUrl, Boolean active,
+            java.math.BigDecimal originalPrice, java.math.BigDecimal deliveryCharge, Integer deliveryDays,
+            java.math.BigDecimal rating, Integer reviewCount) {
         if (name != null) {
             product.setName(name.trim());
         }
         product.setDescription(description == null ? null : description.trim());
         product.setPrice(price);
+        product.setOriginalPrice(originalPrice);
+        if (deliveryCharge != null) product.setDeliveryCharge(deliveryCharge);
+        if (deliveryDays != null) product.setDeliveryDays(deliveryDays);
+        product.setRating(rating);
+        if (reviewCount != null) product.setReviewCount(reviewCount);
         product.setImageUrl(imageUrl == null ? null : imageUrl.trim());
         if (active != null) {
             product.setActive(active);

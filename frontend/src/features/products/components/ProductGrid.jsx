@@ -1,12 +1,13 @@
 import EmptyState from '../../../components/common/EmptyState';
 import ProductCard from './ProductCard';
 
-export default function ProductGrid({ products, onClearFilters }) {
+export default function ProductGrid({ products, onClearFilters, emptyTitle, emptyMessage }) {
   if (!products?.length) {
     return (
       <EmptyState
-        title="No products found."
+        title={emptyTitle || "No products found."}
         message={
+          emptyMessage || (
           <>
             Try a different category or brand, or clear the filters to see all products.
             {onClearFilters ? (
@@ -17,6 +18,7 @@ export default function ProductGrid({ products, onClearFilters }) {
               </div>
             ) : null}
           </>
+          )
         }
       />
     );

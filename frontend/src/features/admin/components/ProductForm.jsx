@@ -5,6 +5,11 @@ const initialState = {
   sku: '',
   description: '',
   price: '',
+  originalPrice: '',
+  rating: '',
+  reviewCount: '',
+  deliveryCharge: '',
+  deliveryDays: '',
   categoryId: '',
   brandId: '',
   imageUrl: '',
@@ -36,6 +41,11 @@ export default function ProductForm({
     onSubmit({
       ...form,
       price: form.price === '' ? '' : Number(form.price),
+      originalPrice: form.originalPrice === '' ? null : Number(form.originalPrice),
+      rating: form.rating === '' ? null : Number(form.rating),
+      reviewCount: form.reviewCount === '' ? null : Number(form.reviewCount),
+      deliveryCharge: form.deliveryCharge === '' ? null : Number(form.deliveryCharge),
+      deliveryDays: form.deliveryDays === '' ? null : Number(form.deliveryDays),
     });
   };
 
@@ -51,8 +61,28 @@ export default function ProductForm({
           <input name="sku" value={form.sku} onChange={handleChange} required />
         </label>
         <label>
-          Price
+          Selling Price (₹)
           <input name="price" type="number" step="0.01" min="0" value={form.price} onChange={handleChange} required />
+        </label>
+        <label>
+          Original Price (₹)
+          <input name="originalPrice" type="number" step="0.01" min={form.price || "0"} value={form.originalPrice} onChange={handleChange} />
+        </label>
+        <label>
+          Delivery Charge (₹)
+          <input name="deliveryCharge" type="number" step="0.01" min="0" value={form.deliveryCharge} onChange={handleChange} />
+        </label>
+        <label>
+          Delivery Days
+          <input name="deliveryDays" type="number" step="1" min="1" value={form.deliveryDays} onChange={handleChange} />
+        </label>
+        <label>
+          Rating (0-5)
+          <input name="rating" type="number" step="0.1" min="0" max="5" value={form.rating} onChange={handleChange} />
+        </label>
+        <label>
+          Review Count
+          <input name="reviewCount" type="number" step="1" min="0" value={form.reviewCount} onChange={handleChange} />
         </label>
         <label>
           Category
@@ -76,7 +106,7 @@ export default function ProductForm({
             ))}
           </select>
         </label>
-        <label>
+        <label style={{ gridColumn: '1 / -1' }}>
           Image URL
           <input name="imageUrl" value={form.imageUrl} onChange={handleChange} />
         </label>

@@ -42,6 +42,21 @@ public class Product {
     @Column(nullable = false, precision = 12, scale = 2)
     private BigDecimal price;
 
+    @Column(name = "original_price", precision = 12, scale = 2)
+    private BigDecimal originalPrice;
+
+    @Column(name = "delivery_charge", precision = 12, scale = 2)
+    private BigDecimal deliveryCharge = BigDecimal.ZERO;
+
+    @Column(name = "delivery_days")
+    private Integer deliveryDays = 5;
+
+    @Column(precision = 3, scale = 2)
+    private BigDecimal rating;
+
+    @Column(name = "review_count")
+    private Integer reviewCount = 0;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
@@ -89,6 +104,16 @@ public class Product {
     public void setDescription(String description) { this.description = description; }
     public BigDecimal getPrice() { return price; }
     public void setPrice(BigDecimal price) { this.price = price; }
+    public BigDecimal getOriginalPrice() { return originalPrice; }
+    public void setOriginalPrice(BigDecimal originalPrice) { this.originalPrice = originalPrice; }
+    public BigDecimal getDeliveryCharge() { return deliveryCharge; }
+    public void setDeliveryCharge(BigDecimal deliveryCharge) { this.deliveryCharge = deliveryCharge; }
+    public Integer getDeliveryDays() { return deliveryDays; }
+    public void setDeliveryDays(Integer deliveryDays) { this.deliveryDays = deliveryDays; }
+    public BigDecimal getRating() { return rating; }
+    public void setRating(BigDecimal rating) { this.rating = rating; }
+    public Integer getReviewCount() { return reviewCount; }
+    public void setReviewCount(Integer reviewCount) { this.reviewCount = reviewCount; }
     public Category getCategory() { return category; }
     public void setCategory(Category category) { this.category = category; }
     public Brand getBrand() { return brand; }

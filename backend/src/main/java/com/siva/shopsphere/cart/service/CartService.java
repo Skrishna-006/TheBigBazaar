@@ -114,7 +114,9 @@ public class CartService {
     private Cart reloadCart(UUID cartId) {
         Cart cart = cartRepository.findById(cartId)
             .orElseThrow(() -> new ResourceNotFoundException("Cart not found"));
-        cart.setItems(cartItemRepository.findAllByCartIdOrderByCreatedAtAsc(cartId));
+        List<CartItem> items = cartItemRepository.findAllByCartIdOrderByCreatedAtAsc(cartId);
+        cart.getItems().clear();
+        cart.getItems().addAll(items);
         return cart;
     }
 

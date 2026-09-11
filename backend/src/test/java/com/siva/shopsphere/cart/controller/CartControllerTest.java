@@ -70,6 +70,25 @@ class CartControllerTest {
     }
 
     @Test
+    void authenticatedGetEmptyCartReturnsOk() throws Exception {
+        authenticate("customer-token", "customer@example.com", "CUSTOMER");
+        CartResponse emptyCart = new CartResponse(
+            UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+            List.of(),
+            0,
+            BigDecimal.ZERO,
+            Instant.now(),
+            Instant.now()
+        );
+        when(cartService.getCart()).thenReturn(emptyCart);
+
+        mockMvc.perform(get("/api/v1/cart").header("Authorization", "Bearer customer-token"))
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.totalItemCount").value(0))
+            .andExpect(jsonPath("$.items").isEmpty());
+    }
+
+    @Test
     void authenticatedAdminCanAccessOwnCart() throws Exception {
         authenticate("admin-token", "admin@example.com", "ADMIN");
         when(cartService.getCart()).thenReturn(cartResponse());

@@ -7,19 +7,21 @@ import { getAdminOrderById, updateAdminOrderStatus } from '../../features/admin/
 import OrderItem from '../../features/orders/components/OrderItem';
 import OrderStatusBadge from '../../features/orders/components/OrderStatusBadge';
 import OrderSummary from '../../features/orders/components/OrderSummary';
+import { getAvailableTransitions } from '../../features/orders/utils/orderTransitions';
 
 export default function AdminOrderDetailsPage() {
   const { id } = useParams();
   const [order, setOrder] = useState(null);
-  const [error, setError] = useState('');
-  const [status, setStatus] = useState('PROCESSING');
+  const [loadError, setLoadError] = useState('');
+  const [saveError, setSaveError] = useState('');
+  const [status, setStatus] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   const load = async () => {
     const data = await getAdminOrderById(id);
     setOrder(data);
-    setStatus(data.status ?? 'PROCESSING');
+    setStatus(data.status);
   };
 
   useEffect(() => {
@@ -27,7 +29,7 @@ export default function AdminOrderDetailsPage() {
       try {
         await load();
       } catch (exception) {
-        setError(normalizeApiError(exception, 'Unable to load order.'));
+        setLoadError(normalizeApiError(exception).message);
       } finally {
         setIsLoading(false);
       }
@@ -39,16 +41,20 @@ export default function AdminOrderDetailsPage() {
       setIsSaving(true);
       await updateAdminOrderStatus(id, status);
       await load();
+      setSaveError('');
     } catch (exception) {
-      setError(normalizeApiError(exception, 'Unable to update order status.'));
+      setSaveError(normalizeApiError(exception).message);
     } finally {
       setIsSaving(false);
     }
   };
 
   if (isLoading) return <LoadingSpinner label="Loading order..." />;
-  if (error) return <ErrorMessage title="Order error" message={error} />;
+  if (loadError) return <ErrorMessage title="Order error" message={loadError} />;
   if (!order) return null;
+
+  const availableTransitions = getAvailableTransitions(order.status);
+  const isTerminal = availableTransitions.length === 0;
 
   return (
     <section className="admin-section">
@@ -62,11 +68,19 @@ export default function AdminOrderDetailsPage() {
       <div className="admin-card">
         <h2>Status</h2>
         <div className="admin-inline-actions">
-          <select value={status} onChange={(e) => setStatus(e.target.value)}>
-            {['PENDING','CONFIRMED','PROCESSING','SHIPPED','DELIVERED','CANCELLED'].map((entry) => <option key={entry} value={entry}>{entry}</option>)}
-          </select>
-          <button type="button" className="primary-btn" disabled={isSaving} onClick={saveStatus}>{isSaving ? 'Saving...' : 'Update status'}</button>
+          {isTerminal ? (
+            <span className="status-note" style={{ fontStyle: 'italic', color: 'var(--text-muted)' }}>No further transitions available</span>
+          ) : (
+            <>
+              <select value={status} onChange={(e) => setStatus(e.target.value)}>
+                <option value={order.status} disabled>{order.status} (Current)</option>
+                {availableTransitions.map((entry) => <option key={entry} value={entry}>{entry}</option>)}
+              </select>
+              <button type="button" className="primary-btn" disabled={isSaving || status === order.status} onClick={saveStatus}>{isSaving ? 'Saving...' : 'Update status'}</button>
+            </>
+          )}
         </div>
+        {saveError ? <p className="form-error" style={{ marginTop: '1rem' }}>{saveError}</p> : null}
       </div>
       <div className="admin-card">
         <h2>Shipping</h2>

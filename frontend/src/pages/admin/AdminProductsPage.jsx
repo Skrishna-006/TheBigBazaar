@@ -72,6 +72,11 @@ export default function AdminProductsPage() {
         sku: editingProduct.sku ?? '',
         description: editingProduct.description ?? '',
         price: editingProduct.price ?? '',
+        originalPrice: editingProduct.originalPrice ?? '',
+        rating: editingProduct.rating ?? '',
+        reviewCount: editingProduct.reviewCount ?? '',
+        deliveryCharge: editingProduct.deliveryCharge ?? '',
+        deliveryDays: editingProduct.deliveryDays ?? '',
         categoryId: editingProduct.category?.id ?? '',
         brandId: editingProduct.brand?.id ?? '',
         imageUrl: editingProduct.imageUrl ?? '',
@@ -100,7 +105,11 @@ export default function AdminProductsPage() {
               <div>
                 <strong>{product.name}</strong>
                 <p>{product.sku}</p>
-                <p>{product.category?.name} · {product.brand?.name}</p>
+                <p>{product.category?.name} • {product.brand?.name}</p>
+                <p>
+                  ₹{product.price}
+                  {product.originalPrice && ` (Original: ₹${product.originalPrice})`}
+                </p>
                 <p>{product.active ? 'Active' : 'Inactive'}</p>
               </div>
               <div className="admin-row__actions">

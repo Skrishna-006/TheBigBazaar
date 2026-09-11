@@ -9,6 +9,9 @@ import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import CartPage from '../pages/CartPage';
 import WishlistPage from '../pages/WishlistPage';
+import CheckoutPage from '../pages/CheckoutPage';
+import OrdersPage from '../pages/OrdersPage';
+import OrderDetailsPage from '../pages/OrderDetailsPage';
 import ProtectedRoute from './ProtectedRoute';
 import AdminRoute from './AdminRoute';
 import AdminLayout from '../layouts/AdminLayout';
@@ -79,6 +82,30 @@ export default function AppRoutes() {
           element={
             <ProtectedRoute>
               <AddressesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/checkout"
+          element={
+            <ProtectedRoute>
+              <CheckoutPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders"
+          element={
+            <ProtectedRoute>
+              <OrdersPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/orders/:id"
+          element={
+            <ProtectedRoute>
+              <OrderDetailsPage />
             </ProtectedRoute>
           }
         />

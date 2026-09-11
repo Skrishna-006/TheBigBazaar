@@ -59,7 +59,20 @@ export default function WishlistPage() {
     setSuccessMessage('');
     try {
       await addCartItem(item.productId, 1);
-      setSuccessMessage('Added to cart.');
+      
+      try {
+        await removeFromWishlist(item.productId);
+        setWishlist((current) => {
+          if (!current) {
+            return current;
+          }
+          const items = current.items.filter((i) => i.productId !== item.productId);
+          return { ...current, items, totalItems: items.length };
+        });
+        setSuccessMessage('Added to cart and removed from wishlist.');
+      } catch (removeError) {
+        setErrorMessage(`Added to cart, but could not remove from wishlist: ${normalizeApiError(removeError).message}`);
+      }
     } catch (error) {
       setErrorMessage(normalizeApiError(error).message);
     } finally {

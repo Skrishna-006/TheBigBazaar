@@ -13,9 +13,17 @@ export function normalizeApiError(error) {
   }
 
   const { status, data } = error.response;
+  const message =
+    (typeof data === 'string' && data.trim()) ||
+    data?.message ||
+    data?.error ||
+    data?.detail ||
+    data?.title ||
+    fallback.message;
+
   return {
     status: status ?? 0,
-    message: data?.message || data?.error || fallback.message,
+    message,
     fieldErrors: data?.fieldErrors,
   };
 }

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.siva.shopsphere.accounts.entity.UserRole;
+import com.siva.shopsphere.exception.BadRequestException;
 import com.siva.shopsphere.exception.ConflictException;
 import com.siva.shopsphere.exception.ForbiddenException;
 import com.siva.shopsphere.exception.ResourceNotFoundException;
@@ -41,6 +42,9 @@ public class ProductService {
     @Transactional
     public ProductResponse createProduct(CreateProductRequest request) {
         requireAdmin();
+        if (request.originalPrice() != null && request.originalPrice().compareTo(request.price()) < 0) {
+            throw new BadRequestException("Original price must be greater than or equal to the selling price");
+        }
         ensureSkuAvailable(request.sku(), null);
         String slug = SlugUtils.toSlug(request.name().trim());
         ensureSlugAvailable(slug, null);
@@ -91,6 +95,9 @@ public class ProductService {
     @Transactional
     public ProductResponse updateProduct(UUID id, UpdateProductRequest request) {
         requireAdmin();
+        if (request.originalPrice() != null && request.originalPrice().compareTo(request.price()) < 0) {
+            throw new BadRequestException("Original price must be greater than or equal to the selling price");
+        }
         Product product = productRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         Category category = loadActiveCategory(request.categoryId());

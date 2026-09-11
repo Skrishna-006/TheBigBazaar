@@ -8,6 +8,7 @@ import { getProducts } from '../features/products/api/productApi';
 import ProductFilters from '../features/products/components/ProductFilters';
 import ProductGrid from '../features/products/components/ProductGrid';
 import { normalizeApiError } from '../utils/apiError';
+import { getTopDeals } from '../utils/productUtils';
 
 const requestCache = {
   categories: null,
@@ -39,6 +40,8 @@ export default function ProductsPage() {
 
   const selectedCategoryId = searchParams.get('categoryId') || '';
   const selectedBrandId = searchParams.get('brandId') || '';
+  const searchQuery = searchParams.get('search') || '';
+  const showDeals = searchParams.get('deals') === 'true';
 
   const productParams = useMemo(
     () => ({
@@ -47,6 +50,24 @@ export default function ProductsPage() {
     }),
     [selectedBrandId, selectedCategoryId]
   );
+
+  const filteredProducts = useMemo(() => {
+    let result = products;
+
+    if (showDeals) {
+      result = getTopDeals(result, result.length);
+    }
+
+    if (!searchQuery) return result;
+    const query = searchQuery.toLowerCase().trim();
+    return result.filter((product) => {
+      const matchName = product.name?.toLowerCase().includes(query);
+      const matchBrand = product.brand?.name?.toLowerCase().includes(query);
+      const matchCategory = product.category?.name?.toLowerCase().includes(query);
+      const matchSku = product.sku?.toLowerCase().includes(query);
+      return matchName || matchBrand || matchCategory || matchSku;
+    });
+  }, [products, searchQuery, showDeals]);
 
   useEffect(() => {
     let mounted = true;
@@ -109,6 +130,12 @@ export default function ProductsPage() {
     if (nextBrandId) {
       next.brandId = nextBrandId;
     }
+    if (searchQuery) {
+      next.search = searchQuery;
+    }
+    if (showDeals) {
+      next.deals = 'true';
+    }
     setSearchParams(next, { replace: true });
   }
 
@@ -121,7 +148,14 @@ export default function ProductsPage() {
   }
 
   function clearFilters() {
-    setSearchParams({}, { replace: true });
+    const next = {};
+    if (searchQuery) {
+      next.search = searchQuery;
+    }
+    if (showDeals) {
+      next.deals = 'true';
+    }
+    setSearchParams(next, { replace: true });
   }
 
   useEffect(() => {
@@ -140,9 +174,19 @@ export default function ProductsPage() {
     <section className="catalog-page">
       <div className="catalog-page__header">
         <div>
-          <p className="eyebrow">Browse the catalog</p>
-          <h1>Products</h1>
-          <p>Discover active ShopSphere products and narrow them by category or brand.</p>
+          {showDeals ? (
+            <>
+              <p className="eyebrow">Top Deals</p>
+              <h1>{searchQuery ? `Search Results for "${searchQuery}" in Deals` : 'Top Deals'}</h1>
+              <p>Discover the best discounts available right now.</p>
+            </>
+          ) : (
+            <>
+              <p className="eyebrow">Browse the catalog</p>
+              <h1>{searchQuery ? `Search Results for "${searchQuery}"` : 'Products'}</h1>
+              <p>Discover active ShopSphere products and narrow them by category or brand.</p>
+            </>
+          )}
         </div>
       </div>
 
@@ -159,7 +203,14 @@ export default function ProductsPage() {
       {isProductsLoading ? <LoadingSpinner label="Updating products..." /> : null}
       {errorMessage ? <ErrorMessage title="Unable to load catalog" message={errorMessage} /> : null}
 
-      {!isProductsLoading && !errorMessage ? <ProductGrid products={products} onClearFilters={clearFilters} /> : null}
+      {!isProductsLoading && !errorMessage ? (
+        <ProductGrid
+          products={filteredProducts}
+          onClearFilters={clearFilters}
+          emptyTitle={showDeals ? "No deals available right now." : undefined}
+          emptyMessage={showDeals ? <p>Check back soon for new offers.</p> : undefined}
+        />
+      ) : null}
     </section>
   );
 }
