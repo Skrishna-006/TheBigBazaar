@@ -84,3 +84,47 @@ export function calculateDeliveryDate(deliveryDays) {
   }
   return null;
 }
+
+export function getTrendingProducts(products, limit = 8) {
+  if (!Array.isArray(products)) return [];
+  
+  const now = Date.now();
+
+  return products
+    .filter(p => p && p.isActive !== false)
+    .map(product => {
+      let score = 0;
+      
+      const rating = Number(product.rating) || 0;
+      if (Number.isFinite(rating)) {
+        score += rating * 10;
+      }
+      
+      const reviews = Number(product.reviewCount) || 0;
+      if (Number.isFinite(reviews)) {
+        score += Math.min(reviews * 0.2, 40);
+      }
+      
+      const discount = calculateDiscount(product.originalPrice, product.price);
+      if (discount && Number.isFinite(discount)) {
+        score += discount * 0.5;
+      }
+      
+      if (product.createdAt) {
+        const createdDate = new Date(product.createdAt).getTime();
+        if (Number.isFinite(createdDate)) {
+          const daysOld = (now - createdDate) / (1000 * 60 * 60 * 24);
+          if (daysOld >= 0 && daysOld < 14) {
+            score += 20;
+          } else if (daysOld >= 0 && daysOld < 60) {
+            score += 10;
+          }
+        }
+      }
+      
+      return { product, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(item => item.product);
+}

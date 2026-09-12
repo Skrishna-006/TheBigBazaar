@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import TopDealsSection from '../features/products/components/TopDealsSection';
+import TrendingNowSection from '../features/products/components/TrendingNowSection';
+import ShopByBrand from '../features/brands/components/ShopByBrand';
 
 export default function HomePage() {
   return (
@@ -20,6 +22,8 @@ export default function HomePage() {
       </section>
 
       <TopDealsSection />
+      <TrendingNowSection />
+      <ShopByBrand />
     </div>
   );
 }

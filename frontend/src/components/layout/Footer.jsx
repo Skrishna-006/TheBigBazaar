@@ -5,21 +5,6 @@ const year = new Date().getFullYear();
 export default function Footer() {
   return (
     <footer className="site-footer-premium">
-      <div className="site-footer-premium__trust-strip">
-        <div className="site-footer-premium__trust-item">
-          <span className="trust-icon">🚚</span>
-          <span>Fast Delivery</span>
-        </div>
-        <div className="site-footer-premium__trust-item">
-          <span className="trust-icon">🔒</span>
-          <span>Secure Checkout</span>
-        </div>
-        <div className="site-footer-premium__trust-item">
-          <span className="trust-icon">🔄</span>
-          <span>Easy Returns</span>
-        </div>
-      </div>
-
       <div className="site-footer-premium__inner">
         <div className="site-footer-premium__brand">
           <h2 className="site-footer-premium__logo">ShopSphere</h2>

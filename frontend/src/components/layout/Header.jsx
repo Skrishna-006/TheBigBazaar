@@ -2,6 +2,7 @@ import { NavLink, Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/AuthContext';
 import { useState, useRef, useEffect } from 'react';
 import SearchBar from './SearchBar';
+import CategoryNav from './CategoryNav';
 
 // Icons
 const SearchIcon = () => (
@@ -141,6 +142,11 @@ export default function Header() {
               <NavLink to="/admin" className={({ isActive }) => `site-nav-premium__link${isActive ? ' site-nav-premium__link--active' : ''}`} onClick={closeMobileMenu}>Admin</NavLink>
             ) : null}
 
+            {/* Mobile Categories Accordion */}
+            {mobileMenuOpen && (
+              <CategoryNav mobileMenuOpen={mobileMenuOpen} closeMobileMenu={closeMobileMenu} />
+            )}
+
             {/* Fallback Auth links for mobile inside menu when logged out */}
             {!isAuthenticated && mobileMenuOpen && (
               <div className="site-header-premium__mobile-auth">
@@ -208,6 +214,9 @@ export default function Header() {
           </Link>
         </div>
       </div>
+      
+      {/* Desktop Category Navigation Bar */}
+      <CategoryNav />
     </header>
   );
 }
