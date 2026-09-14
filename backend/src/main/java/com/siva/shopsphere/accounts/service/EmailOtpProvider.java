@@ -28,23 +28,52 @@ public class EmailOtpProvider implements OtpDeliveryService {
 
     @Override
     public void deliverOtp(String destination, String rawOtp) {
+        String subject = "Your TheBigBazaar verification code";
+        
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(fromEmail);
+            message.setReplyTo(fromEmail);
             message.setTo(destination);
-            message.setSubject("TheBigBazaar Verification Code");
+            message.setSubject(subject);
             message.setText("Hello,\n\n" +
                     "Your TheBigBazaar verification code is:\n\n" +
                     rawOtp + "\n\n" +
-                    "This code will expire in 5 minutes.\n\n" +
-                    "If you did not request this code, you can safely ignore this email.\n\n" +
-                    "Do not share this code with anyone.\n\n" +
+                    "This code expires in 5 minutes.\n\n" +
+                    "If you did not request this verification code, you can safely ignore this email.\n\n" +
+                    "For your security, do not share this code with anyone.\n\n" +
                     "Regards,\n" +
                     "TheBigBazaar Team");
 
+            logger.info("==================================================");
+            logger.info("TheBigBazaar OTP Email");
+            logger.info("==================================================");
+            logger.info("To: {}", destination);
+            logger.info("From: {}", fromEmail);
+            logger.info("Subject: {}", subject);
+            logger.info("OTP: {}", rawOtp);
+            logger.info("Expires: 5 minutes");
+            logger.info("Status: SENDING");
+            logger.info("==================================================");
+
             mailSender.send(message);
+
+            logger.info("==================================================");
+            logger.info("TheBigBazaar OTP Email");
+            logger.info("==================================================");
+            logger.info("To: {}", destination);
+            logger.info("Status: SENT TO SMTP SERVER");
+            logger.info("==================================================");
+            
         } catch (MailException e) {
-            logger.error("Failed to send email to {}", destination, e);
+            logger.error("==================================================");
+            logger.error("TheBigBazaar OTP Email");
+            logger.error("==================================================");
+            logger.error("To: {}", destination);
+            logger.error("Status: FAILED");
+            logger.error("Error: {}", e.getMessage());
+            logger.error("==================================================");
+            
             throw new ServiceUnavailableException("Unable to send OTP via email at this time. Please try again later.");
         }
     }

@@ -45,6 +45,8 @@ app:
     secret: ${JWT_SECRET:change-me-change-me-change-me-change-me-change-me}
     access-expiration-ms: ${JWT_ACCESS_EXPIRATION:900000}
     refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION:604800000}
+  email:
+    log-otp: ${EMAIL_LOG_OTP:false}
 
 # Production deployments should supply DATABASE_URL, DATABASE_USERNAME, and DATABASE_PASSWORD
 # via environment variables and should use database migrations such as Flyway in a later phase.
