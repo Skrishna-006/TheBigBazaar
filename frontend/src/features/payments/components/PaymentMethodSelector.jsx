@@ -10,7 +10,7 @@ export default function PaymentMethodSelector({ value, onChange, disabled = fals
   return (
     <fieldset className="payment-method-selector" disabled={disabled}>
       <legend>Payment method</legend>
-      <p className="payment-note">This checkout uses ShopSphere&apos;s development payment gateway.</p>
+      <p className="payment-note">This checkout uses TheBigBazaar&apos;s development payment gateway.</p>
       <div className="payment-method-selector__grid" role="radiogroup" aria-label="Payment methods">
         {paymentMethods.map((method) => (
           <label

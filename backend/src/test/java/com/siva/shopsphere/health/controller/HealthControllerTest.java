@@ -37,6 +37,6 @@ class HealthControllerTest {
         mockMvc.perform(get("/api/v1/health"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.status").value("UP"))
-            .andExpect(jsonPath("$.message").value("ShopSphere backend is running"));
+            .andExpect(jsonPath("$.message").value("TheBigBazaar backend is running"));
     }
 }

@@ -53,21 +53,6 @@ class AuthControllerTest {
     private JwtService jwtService;
 
     @Test
-    void registerReturnsCreated() throws Exception {
-        AuthResponse response = new AuthResponse("access", "refresh", "Bearer", 900, userResponse());
-        when(authService.register(any())).thenReturn(response);
-
-        mockMvc.perform(post("/api/v1/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {"email":"customer@example.com","password":"Password@123","firstName":"Test","lastName":"Customer","phoneNumber":"9876543210"}
-                """))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.accessToken").value("access"))
-            .andExpect(jsonPath("$.user.email").value("customer@example.com"));
-    }
-
-    @Test
     void loginReturnsOk() throws Exception {
         AuthResponse response = new AuthResponse("access", "refresh", "Bearer", 900, userResponse());
         when(authService.login(any())).thenReturn(response);
@@ -84,9 +69,9 @@ class AuthControllerTest {
     @Test
     void meReturnsAuthenticatedUser() throws Exception {
         when(jwtService.isAccessTokenValid("valid-token")).thenReturn(true);
-        when(jwtService.extractSubject("valid-token")).thenReturn("customer@example.com");
-        when(customUserDetailsService.loadUserByUsername("customer@example.com")).thenReturn(
-            org.springframework.security.core.userdetails.User.withUsername("customer@example.com")
+        when(jwtService.extractSubject("valid-token")).thenReturn("9876543210");
+        when(customUserDetailsService.loadUserByUsername("9876543210")).thenReturn(
+            org.springframework.security.core.userdetails.User.withUsername("9876543210")
                 .password("hash")
                 .roles("CUSTOMER")
                 .build()
@@ -95,7 +80,7 @@ class AuthControllerTest {
 
         mockMvc.perform(get("/api/v1/auth/me").header("Authorization", "Bearer valid-token"))
             .andExpect(status().isOk())
-            .andExpect(jsonPath("$.email").value("customer@example.com"))
+            .andExpect(jsonPath("$.phoneNumber").value("9876543210"))
             .andExpect(jsonPath("$.role").value("CUSTOMER"));
     }
 

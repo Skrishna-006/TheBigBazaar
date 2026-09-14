@@ -14,7 +14,7 @@ public class HealthController {
     public Map<String, String> health() {
         return Map.of(
             "status", "UP",
-            "message", "ShopSphere backend is running"
+            "message", "TheBigBazaar backend is running"
         );
     }
 }

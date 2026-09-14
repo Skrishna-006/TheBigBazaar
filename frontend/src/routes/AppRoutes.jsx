@@ -7,6 +7,7 @@ import ProfilePage from '../pages/ProfilePage';
 import AddressesPage from '../pages/AddressesPage';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
+import ForgotPasswordPage from '../pages/ForgotPasswordPage';
 import CartPage from '../pages/CartPage';
 import WishlistPage from '../pages/WishlistPage';
 import CheckoutPage from '../pages/CheckoutPage';
@@ -42,7 +43,7 @@ export default function AppRoutes() {
   const { isLoading } = useAuth();
 
   if (isLoading) {
-    return <LoadingSpinner label="Preparing ShopSphere..." />;
+    return <LoadingSpinner label="Preparing TheBigBazaar..." />;
   }
 
   return (
@@ -53,6 +54,7 @@ export default function AppRoutes() {
         <Route path="/products/:id" element={<ProductDetailsPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route
           path="/cart"
           element={

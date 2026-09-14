@@ -47,7 +47,7 @@
       <artifactId>batik-maven-plugin</artifactId>
     </plugin>
     <plugin>
-      <name>build-helper-maven-plugin</name>
+      <name>Build Helper Maven Plugin</name>
       <prefix>build-helper</prefix>
       <artifactId>build-helper-maven-plugin</artifactId>
     </plugin>
@@ -62,7 +62,7 @@
       <artifactId>buildnumber-maven-plugin</artifactId>
     </plugin>
     <plugin>
-      <name>buildplan-maven-plugin</name>
+      <name>BuildPlan Maven Plugin</name>
       <prefix>buildplan</prefix>
       <artifactId>buildplan-maven-plugin</artifactId>
     </plugin>
@@ -107,7 +107,7 @@
       <artifactId>chronos-surefire-maven-plugin</artifactId>
     </plugin>
     <plugin>
-      <name>clirr-maven-plugin</name>
+      <name>Clirr Maven Plugin</name>
       <prefix>clirr</prefix>
       <artifactId>clirr-maven-plugin</artifactId>
     </plugin>
@@ -577,7 +577,7 @@
       <artifactId>templating-maven-plugin</artifactId>
     </plugin>
     <plugin>
-      <name>tidy-maven-plugin</name>
+      <name>Tidy Maven Plugin</name>
       <prefix>tidy</prefix>
       <artifactId>tidy-maven-plugin</artifactId>
     </plugin>

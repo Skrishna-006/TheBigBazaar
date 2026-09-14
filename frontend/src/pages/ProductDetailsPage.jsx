@@ -9,6 +9,9 @@ import ProductPrice from '../features/products/components/ProductPrice';
 import WishlistButton from '../features/wishlist/components/WishlistButton';
 import { normalizeApiError } from '../utils/apiError';
 import { calculateDiscount, calculateDeliveryDate } from '../utils/productUtils';
+import { addRecentlyViewed } from '../utils/recentlyViewedUtils';
+import { ProductDescription, DeliveryInformation, ProductHighlights, ProductSpecifications, SoldBy, ProductReviews } from '../features/products/components/ProductInfoSections';
+import SimilarProducts from '../features/products/components/SimilarProducts';
 
 const placeholderImage =
   'data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A//www.w3.org/2000/svg%22 width%3D%22960%22 height%3D%22720%22 viewBox%3D%220 0 960 720%22%3E%3Crect width%3D%22960%22 height%3D%22720%22 rx%3D%2232%22 fill%3D%22%23e2e8f0%22/%3E%3Cpath d%3D%22M240 500l120-140 92 106 80-88 188 222H240z%22 fill%3D%22%23cbd5e1%22/%3E%3Ccircle cx%3D%22364%22 cy%3D%22306%22 r%3D%2264%22 fill%3D%22%23cbd5e1%22/%3E%3C/svg%3E';
@@ -36,6 +39,9 @@ export default function ProductDetailsPage() {
         const data = await getProductById(id);
         if (mounted) {
           setProduct(data);
+          if (data && data.id) {
+            addRecentlyViewed(data.id);
+          }
         }
       } catch (error) {
         const normalized = normalizeApiError(error);
@@ -147,15 +153,6 @@ export default function ProductDetailsPage() {
             )}
           </div>
 
-          {deliveryDate && (
-            <div style={{ fontSize: '1rem', color: '#444', marginBottom: '1.5rem', fontWeight: 500 }}>
-              {product.deliveryCharge === 0 || product.deliveryCharge == null
-                ? `🚚 Free delivery by ${deliveryDate}`
-                : `🚚 Delivery ₹${product.deliveryCharge} by ${deliveryDate}`}
-            </div>
-          )}
-
-          {product.description ? <p className="product-detail__description">{product.description}</p> : null}
           {cartMessage ? <div className="success-message">{cartMessage}</div> : null}
           <div className="product-detail__actions">
             <button type="button" className="button button--primary" onClick={handleAddToCart} disabled={isAddingToCart}>
@@ -168,6 +165,16 @@ export default function ProductDetailsPage() {
           </div>
           <p className="product-detail__note">Cart keeps the current product price and revalidates stock later.</p>
         </div>
+      </div>
+
+      <div className="product-extended-info">
+        <ProductDescription description={product.description} />
+        <ProductHighlights highlights={product.highlights} />
+        <ProductSpecifications specifications={product.specifications} />
+        <SoldBy seller={product.seller} />
+        <DeliveryInformation deliveryDate={deliveryDate} deliveryCharge={product.deliveryCharge} />
+        <ProductReviews productId={product.id} initialRating={product.rating} initialReviewCount={product.reviewCount} />
+        <SimilarProducts currentProduct={product} />
       </div>
     </section>
   );

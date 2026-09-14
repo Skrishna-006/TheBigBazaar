@@ -14,4 +14,5 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     Optional<Order> findByIdAndUserId(UUID id, UUID userId);
     List<Order> findAllByStatusOrderByCreatedAtDesc(OrderStatus status);
     List<Order> findAllByOrderByCreatedAtDesc();
+    boolean existsByUserIdAndItemsProductId(UUID userId, UUID productId);
 }

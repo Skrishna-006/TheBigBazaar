@@ -2,8 +2,22 @@ server:
   port: 8080
 
 spring:
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_APP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
   application:
-    name: shopsphere
+    name: TheBigBazaar
   datasource:
     url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/shopsphere}
     username: ${DATABASE_USERNAME:postgres}
@@ -19,6 +33,9 @@ spring:
           time_zone: UTC
     show-sql: false
     generate-ddl: false
+
+otp:
+  delivery: ${OTP_DELIVERY:email}
 
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:5173}

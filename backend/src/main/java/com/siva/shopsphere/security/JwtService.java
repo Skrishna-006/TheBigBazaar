@@ -78,8 +78,9 @@ public class JwtService {
         Instant now = Instant.now();
         long iat = now.toEpochMilli();
         long exp = now.plusMillis(expirationMillis).toEpochMilli();
+        String identifier = user.getPhoneNumber() != null ? user.getPhoneNumber() : user.getEmail();
         String payload = json(Map.of(
-            "sub", user.getEmail(),
+            "sub", identifier,
             "iat", iat,
             "exp", exp,
             "role", user.getRole().name(),

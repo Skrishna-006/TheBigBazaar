@@ -12,8 +12,8 @@
   <groupId>com.siva</groupId>
   <artifactId>shopsphere</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>ShopSphere</name>
-  <description>ShopSphere backend</description>
+  <name>TheBigBazaar</name>
+  <description>TheBigBazaar backend</description>
 
   <properties>
     <java.version>25</java.version>
@@ -41,6 +41,10 @@
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-mail</artifactId>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>

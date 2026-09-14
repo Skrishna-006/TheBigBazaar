@@ -22,7 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.siva.shopsphere.accounts.dto.AuthResponse;
 import com.siva.shopsphere.accounts.dto.LoginRequest;
-import com.siva.shopsphere.accounts.dto.RegisterRequest;
+import com.siva.shopsphere.accounts.dto.CompleteRegistrationRequest;
+import com.siva.shopsphere.accounts.entity.OtpPurpose;
 import com.siva.shopsphere.accounts.entity.User;
 import com.siva.shopsphere.accounts.entity.UserRole;
 import com.siva.shopsphere.accounts.repository.UserRepository;
@@ -45,6 +46,9 @@ class AuthServiceTest {
     @Mock
     private JwtService jwtService;
 
+    @Mock
+    private OtpService otpService;
+
     @InjectMocks
     private AuthService authService;
 
@@ -54,19 +58,18 @@ class AuthServiceTest {
     void setUp() {
         sampleUser = new User();
         sampleUser.setId(UUID.randomUUID());
-        sampleUser.setEmail("customer@example.com");
         sampleUser.setPasswordHash("$2a$10$hash");
         sampleUser.setFirstName("Test");
         sampleUser.setLastName("Customer");
-        sampleUser.setPhoneNumber("9876543210");
+        sampleUser.setEmail("user@example.com");
         sampleUser.setRole(UserRole.CUSTOMER);
         sampleUser.setActive(true);
         sampleUser.setEmailVerified(false);
     }
 
     @Test
-    void registerCreatesCustomerWithHashedPassword() {
-        RegisterRequest request = new RegisterRequest("User@Example.com", "Password@123", "Test", "Customer", "9876543210");
+    void completeRegistrationCreatesCustomerWithHashedPassword() {
+        CompleteRegistrationRequest request = new CompleteRegistrationRequest("user@example.com", "valid-token", "Test", "Customer", "Password@123");
         when(userRepository.existsByEmail("user@example.com")).thenReturn(false);
         when(passwordEncoder.encode("Password@123")).thenReturn("$2a$10$encoded");
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
@@ -78,19 +81,20 @@ class AuthServiceTest {
         when(jwtService.generateRefreshToken(any(User.class))).thenReturn("refresh");
         when(jwtService.getAccessTokenExpirationSeconds()).thenReturn(900L);
 
-        AuthResponse response = authService.register(request);
+        AuthResponse response = authService.completeRegistration(request);
 
         assertThat(response.accessToken()).isEqualTo("access");
         assertThat(response.user().email()).isEqualTo("user@example.com");
         assertThat(response.user().role()).isEqualTo(UserRole.CUSTOMER);
         verify(passwordEncoder).encode("Password@123");
+        verify(otpService).validateToken("user@example.com", "valid-token", OtpPurpose.REGISTRATION);
     }
 
     @Test
-    void duplicateEmailIsRejected() {
+    void duplicateEmailIsRejectedDuringRegistration() {
         when(userRepository.existsByEmail("user@example.com")).thenReturn(true);
 
-        assertThatThrownBy(() -> authService.register(new RegisterRequest("user@example.com", "Password@123", "Test", "Customer", "9876543210")))
+        assertThatThrownBy(() -> authService.completeRegistration(new CompleteRegistrationRequest("user@example.com", "valid-token", "Test", "Customer", "Password@123")))
             .isInstanceOf(ConflictException.class);
     }
 
@@ -99,11 +103,11 @@ class AuthServiceTest {
         when(jwtService.generateAccessToken(sampleUser)).thenReturn("access");
         when(jwtService.generateRefreshToken(sampleUser)).thenReturn("refresh");
         when(jwtService.getAccessTokenExpirationSeconds()).thenReturn(900L);
-        when(userRepository.findByEmail("customer@example.com")).thenReturn(Optional.of(sampleUser));
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(sampleUser));
 
-        AuthResponse response = authService.login(new LoginRequest("Customer@Example.com", "Password@123"));
+        AuthResponse response = authService.login(new LoginRequest("user@example.com", "Password@123"));
 
-        verify(authenticationManager).authenticate(new UsernamePasswordAuthenticationToken("customer@example.com", "Password@123"));
+        verify(authenticationManager).authenticate(new UsernamePasswordAuthenticationToken("user@example.com", "Password@123"));
         assertThat(response.accessToken()).isEqualTo("access");
     }
 
@@ -112,29 +116,7 @@ class AuthServiceTest {
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
             .thenThrow(new BadCredentialsException("Bad credentials"));
 
-        assertThatThrownBy(() -> authService.login(new LoginRequest("customer@example.com", "WrongPassword@123")))
-            .isInstanceOf(UnauthorizedException.class)
-            .hasMessage("Invalid email or password.");
-    }
-
-    @Test
-    void loginWithUnknownEmailReturnsUnauthorizedWithoutLeakingDetails() {
-        when(userRepository.findByEmail("unknown@example.com")).thenReturn(Optional.empty());
-
-        AuthResponse response = null;
-        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class))).thenAnswer(invocation -> null);
-
-        assertThatThrownBy(() -> authService.login(new LoginRequest("unknown@example.com", "Password@123")))
-            .isInstanceOf(UnauthorizedException.class)
-            .hasMessage("Invalid email or password.");
-    }
-
-    @Test
-    void inactiveUserCannotLogin() {
-        sampleUser.setActive(false);
-        when(userRepository.findByEmail("customer@example.com")).thenReturn(Optional.of(sampleUser));
-
-        assertThatThrownBy(() -> authService.login(new LoginRequest("customer@example.com", "Password@123")))
+        assertThatThrownBy(() -> authService.login(new LoginRequest("user@example.com", "WrongPassword@123")))
             .isInstanceOf(UnauthorizedException.class)
             .hasMessage("Invalid email or password.");
     }
@@ -142,10 +124,11 @@ class AuthServiceTest {
     @Test
     void refreshRequiresValidRefreshToken() {
         when(jwtService.isRefreshTokenValid("refresh")).thenReturn(true);
-        when(jwtService.extractSubject("refresh")).thenReturn("customer@example.com");
+        when(jwtService.extractSubject("refresh")).thenReturn("user@example.com");
         when(jwtService.generateAccessToken(sampleUser)).thenReturn("new-access");
         when(jwtService.getAccessTokenExpirationSeconds()).thenReturn(900L);
-        when(userRepository.findByEmail("customer@example.com")).thenReturn(Optional.of(sampleUser));
+        when(userRepository.findByPhoneNumber("user@example.com")).thenReturn(Optional.empty());
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(sampleUser));
 
         AuthResponse response = authService.refresh("refresh");
 

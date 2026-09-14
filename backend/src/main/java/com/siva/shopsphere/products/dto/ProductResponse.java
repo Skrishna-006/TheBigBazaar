@@ -2,6 +2,7 @@ package com.siva.shopsphere.products.dto;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public record ProductResponse(
@@ -18,6 +19,9 @@ public record ProductResponse(
     Integer reviewCount,
     ProductCategoryResponse category,
     ProductBrandResponse brand,
+    ProductSellerResponse seller,
+    List<String> highlights,
+    java.util.Map<String, Object> specifications,
     String imageUrl,
     boolean active,
     Instant createdAt,

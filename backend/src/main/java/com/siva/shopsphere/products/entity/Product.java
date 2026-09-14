@@ -57,6 +57,10 @@ public class Product {
     @Column(name = "review_count")
     private Integer reviewCount = 0;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private com.siva.shopsphere.sellers.entity.Seller seller;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "category_id", nullable = false)
     private Category category;
@@ -64,6 +68,14 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "brand_id", nullable = false)
     private Brand brand;
+
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private java.util.List<String> highlights = new java.util.ArrayList<>();
+
+    @org.hibernate.annotations.JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private java.util.Map<String, Object> specifications = new java.util.HashMap<>();
 
     @Column(name = "image_url", length = 500)
     private String imageUrl;
@@ -124,4 +136,13 @@ public class Product {
     public void setActive(boolean active) { this.active = active; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
+
+    public com.siva.shopsphere.sellers.entity.Seller getSeller() { return seller; }
+    public void setSeller(com.siva.shopsphere.sellers.entity.Seller seller) { this.seller = seller; }
+    public java.util.List<String> getHighlights() { return highlights; }
+    public void setHighlights(java.util.List<String> highlights) { this.highlights = highlights; }
+    public java.util.Map<String, Object> getSpecifications() { return specifications; }
+    public void setSpecifications(java.util.Map<String, Object> specifications) { this.specifications = specifications; }
+
+
 }

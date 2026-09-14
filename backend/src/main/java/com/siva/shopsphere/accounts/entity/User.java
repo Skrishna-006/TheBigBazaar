@@ -14,7 +14,10 @@ import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "users", indexes = @Index(name = "idx_users_email", columnList = "email"))
+@Table(name = "users", indexes = {
+    @Index(name = "idx_users_email", columnList = "email"),
+    @Index(name = "idx_users_phone", columnList = "phoneNumber")
+})
 public class User {
 
     public User() {
@@ -24,7 +27,7 @@ public class User {
     @Column(nullable = false, updatable = false)
     private UUID id;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(unique = true, length = 255)
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
@@ -36,7 +39,7 @@ public class User {
     @Column(nullable = false, length = 100)
     private String lastName;
 
-    @Column(length = 30)
+    @Column(length = 30, unique = true)
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)

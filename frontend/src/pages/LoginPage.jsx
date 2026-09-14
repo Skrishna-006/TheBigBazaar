@@ -34,8 +34,9 @@ export default function LoginPage() {
   function validate(values) {
     const errors = {};
     if (!values.email.trim()) {
-      errors.email = 'Email is required';
+      errors.email = 'Email address is required';
     }
+    
     if (!values.password.trim()) {
       errors.password = 'Password is required';
     }
@@ -82,14 +83,13 @@ export default function LoginPage() {
 
       <form className="auth-form" onSubmit={handleSubmit} noValidate>
         <div className="form-field">
-          <label htmlFor="login-email">Email</label>
+          <label htmlFor="login-email">Email Address</label>
           <input
             id="login-email"
             name="email"
             type="email"
             value={form.email}
             onChange={handleChange}
-            autoComplete="email"
             aria-invalid={Boolean(fieldErrors.email)}
             aria-describedby={fieldErrors.email ? 'login-email-error' : undefined}
           />
@@ -101,7 +101,10 @@ export default function LoginPage() {
         </div>
 
         <div className="form-field">
-          <label htmlFor="login-password">Password</label>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+            <label htmlFor="login-password">Password</label>
+            <Link to="/forgot-password" style={{ fontSize: '0.875rem' }}>Forgot password?</Link>
+          </div>
           <input
             id="login-password"
             name="password"

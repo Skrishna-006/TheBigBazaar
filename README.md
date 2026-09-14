@@ -1,6 +1,6 @@
-# ShopSphere
+# TheBigBazaar
 
-ShopSphere is a modular monolith e-commerce application scaffold built from scratch with a React + Vite frontend and a Spring Boot backend.
+TheBigBazaar is a modular monolith e-commerce application scaffold built from scratch with a React + Vite frontend and a Spring Boot backend.
 
 This repository currently contains the backend foundation from Phases 1 through 3:
 
@@ -43,24 +43,24 @@ Local defaults are provided in `backend/src/main/resources/application.yml`, but
 
 PostgreSQL must be installed and running locally before the backend can start.
 
-Create the database named `shopsphere`:
+Create the database named `TheBigBazaar`:
 
 Windows CLI:
 
 ```bash
-createdb shopsphere
+createdb TheBigBazaar
 ```
 
 SQL alternative:
 
 ```sql
-CREATE DATABASE shopsphere;
+CREATE DATABASE TheBigBazaar;
 ```
 
 Recommended local database URL:
 
 ```bash
-jdbc:postgresql://localhost:5432/shopsphere
+jdbc:postgresql://localhost:5432/TheBigBazaar
 ```
 
 Use environment variables to override credentials as needed:
@@ -239,9 +239,9 @@ Orders capture a historical snapshot of what the customer purchased.
 
 ## Payments
 
-ShopSphere uses a separate payment domain that sits on top of orders.
+TheBigBazaar uses a separate payment domain that sits on top of orders.
 
-- `src/main/java/com/siva/shopsphere/payments/entity/Payment.java` stores the payment record.
+- `src/main/java/com/siva/TheBigBazaar/payments/entity/Payment.java` stores the payment record.
 - `PaymentStatus` uses explicit lifecycle states: `PENDING`, `AUTHORIZED`, `PAID`, `FAILED`, `CANCELLED`, and `REFUNDED`.
 - `PaymentMethod` keeps the payment method extensible while staying explicit.
 - `PaymentGateway` is the integration boundary for provider-specific behavior.
@@ -397,7 +397,7 @@ Production should later use database migrations such as Flyway.
 
 ## Backend Architecture
 
-ShopSphere follows a simple layered backend architecture:
+TheBigBazaar follows a simple layered backend architecture:
 
 Controller
 -> DTO
@@ -506,7 +506,7 @@ Inventory will be implemented separately in Phase 9, so product records do not r
 OpenAPI:
 
 - Springdoc OpenAPI is included for basic API documentation support
-- API metadata is configured with the title `ShopSphere API`, description `REST API for the ShopSphere e-commerce application`, and version `v1`
+- API metadata is configured with the title `TheBigBazaar API`, description `REST API for the TheBigBazaar e-commerce application`, and version `v1`
 
 ## Inventory Management
 

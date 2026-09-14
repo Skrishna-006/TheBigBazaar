@@ -13,7 +13,7 @@ export default function ScrollManager() {
       if (location.pathname === '/products') {
         if (timeoutId) return;
         timeoutId = setTimeout(() => {
-          const key = `shopsphere-products-scroll-${location.search}`;
+          const key = `thebigbazaar-products-scroll-${location.search}`;
           sessionStorage.setItem(key, window.scrollY.toString());
           timeoutId = null;
         }, 100);
@@ -59,7 +59,7 @@ export default function ScrollManager() {
     // If POP (Browser Back/Forward)
     if (navigationType === 'POP') {
       if (isProducts) {
-        const key = `shopsphere-products-scroll-${location.search}`;
+        const key = `thebigbazaar-products-scroll-${location.search}`;
         const saved = sessionStorage.getItem(key);
         performScroll(saved ? parseInt(saved, 10) : 0);
       } else if (isProductDetails) {
@@ -71,7 +71,7 @@ export default function ScrollManager() {
       if (isProducts) {
         if (wasProductDetails) {
           // Navbar click returning specifically from Product Details to Products
-          const key = `shopsphere-products-scroll-${location.search}`;
+          const key = `thebigbazaar-products-scroll-${location.search}`;
           const saved = sessionStorage.getItem(key);
           performScroll(saved ? parseInt(saved, 10) : 0);
         } else {

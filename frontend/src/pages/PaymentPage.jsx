@@ -10,7 +10,7 @@ import PaymentMethodSelector from '../features/payments/components/PaymentMethod
 import PaymentStatus from '../features/payments/components/PaymentStatus';
 import { normalizeApiError } from '../utils/apiError';
 
-const STORAGE_PREFIX = 'shopsphere:payment:idempotency:';
+const STORAGE_PREFIX = 'thebigbazaar:payment:idempotency:';
 
 function getStorageKey(orderId) {
   return `${STORAGE_PREFIX}${orderId}`;

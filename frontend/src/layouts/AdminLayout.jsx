@@ -11,7 +11,7 @@ export default function AdminLayout() {
       <div className="admin-shell__content">
         <header className="admin-topbar">
           <div>
-            <p className="admin-topbar__eyebrow">ShopSphere Administration</p>
+            <p className="admin-topbar__eyebrow">TheBigBazaar Administration</p>
             <h1 className="admin-topbar__title">
               {user?.firstName ? `${user.firstName} ${user.lastName ?? ''}`.trim() : 'Admin'}
             </h1>

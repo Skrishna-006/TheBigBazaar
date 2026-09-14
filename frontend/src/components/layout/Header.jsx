@@ -132,8 +132,8 @@ export default function Header() {
 
         {/* LEFT: BRAND & NAV */}
         <div className="site-header-premium__left">
-          <Link to="/" className="site-header-premium__brand" aria-label="ShopSphere home" onClick={closeMobileMenu}>
-            ShopSphere
+          <Link to="/" className="site-header-premium__brand" aria-label="TheBigBazaar home" onClick={closeMobileMenu}>
+            TheBigBazaar
           </Link>
           <nav className={`site-header-premium__nav ${mobileMenuOpen ? 'site-header-premium__nav--open' : ''}`} aria-label="Primary">
             <NavLink to="/" className={({ isActive }) => `site-nav-premium__link${isActive ? ' site-nav-premium__link--active' : ''}`} end onClick={closeMobileMenu}>Home</NavLink>

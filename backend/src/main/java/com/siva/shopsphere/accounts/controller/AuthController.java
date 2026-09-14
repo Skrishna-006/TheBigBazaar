@@ -12,9 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.siva.shopsphere.accounts.dto.AuthResponse;
 import com.siva.shopsphere.accounts.dto.LoginRequest;
-import com.siva.shopsphere.accounts.dto.RegisterRequest;
 import com.siva.shopsphere.accounts.dto.RefreshRequest;
 import com.siva.shopsphere.accounts.dto.UserResponse;
+import com.siva.shopsphere.accounts.dto.SendOtpRequest;
+import com.siva.shopsphere.accounts.dto.VerifyOtpRequest;
+import com.siva.shopsphere.accounts.dto.VerifyOtpResponse;
+import com.siva.shopsphere.accounts.dto.CompleteRegistrationRequest;
+import com.siva.shopsphere.accounts.dto.CompletePasswordResetRequest;
 import com.siva.shopsphere.accounts.service.AuthService;
 import com.siva.shopsphere.accounts.service.UserService;
 
@@ -30,9 +34,37 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@Valid @RequestBody RegisterRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(authService.register(request));
+    @PostMapping("/register/send-otp")
+    public ResponseEntity<Void> sendRegistrationOtp(@Valid @RequestBody SendOtpRequest request) {
+        authService.sendRegistrationOtp(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/register/verify-otp")
+    public ResponseEntity<VerifyOtpResponse> verifyRegistrationOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        return ResponseEntity.ok(authService.verifyRegistrationOtp(request));
+    }
+
+    @PostMapping("/register/complete")
+    public ResponseEntity<AuthResponse> completeRegistration(@Valid @RequestBody CompleteRegistrationRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.completeRegistration(request));
+    }
+
+    @PostMapping("/password-reset/send-otp")
+    public ResponseEntity<Void> sendPasswordResetOtp(@Valid @RequestBody SendOtpRequest request) {
+        authService.sendPasswordResetOtp(request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/password-reset/verify-otp")
+    public ResponseEntity<VerifyOtpResponse> verifyPasswordResetOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        return ResponseEntity.ok(authService.verifyPasswordResetOtp(request));
+    }
+
+    @PostMapping("/password-reset/complete")
+    public ResponseEntity<Void> completePasswordReset(@Valid @RequestBody CompletePasswordResetRequest request) {
+        authService.completePasswordReset(request);
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")

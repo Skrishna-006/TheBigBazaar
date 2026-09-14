@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import TopDealsSection from '../features/products/components/TopDealsSection';
 import TrendingNowSection from '../features/products/components/TrendingNowSection';
+import RecentlyViewedSection from '../features/products/components/RecentlyViewedSection';
 import ShopByBrand from '../features/brands/components/ShopByBrand';
 
 export default function HomePage() {
@@ -8,7 +9,7 @@ export default function HomePage() {
     <div className="home-page">
       <section className="home-hero">
         <div className="home-hero__content">
-          <p className="eyebrow">SHOPSPHERE</p>
+          <p className="eyebrow">THEBIGBAZAAR</p>
           <h1>Everything You Need, All in One Place</h1>
           <p className="home-hero__text">
             Discover quality products, great prices, and a seamless shopping experience.
@@ -21,6 +22,7 @@ export default function HomePage() {
         </div>
       </section>
 
+      <RecentlyViewedSection />
       <TopDealsSection />
       <TrendingNowSection />
       <ShopByBrand />

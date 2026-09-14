@@ -335,7 +335,7 @@ export default function ProductsPage() {
             <>
               <p className="eyebrow">Browse the catalog</p>
               <h1>{searchQuery ? `Search Results for "${searchQuery}"` : 'Products'}</h1>
-              <p>Discover active ShopSphere products and narrow them by category or brand.</p>
+              <p>Discover active TheBigBazaar products and narrow them by category or brand.</p>
             </>
           )}
         </div>

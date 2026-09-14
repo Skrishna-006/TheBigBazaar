@@ -81,7 +81,10 @@ public class ProductService {
         Product product = productRepository.findById(id)
             .filter(Product::isActive)
             .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        return ProductMapper.toResponse(product);
+        org.hibernate.Hibernate.initialize(product.getSeller());
+        org.hibernate.Hibernate.initialize(product.getHighlights());
+        org.hibernate.Hibernate.initialize(product.getSpecifications());
+        return ProductMapper.toDetailResponse(product);
     }
 
     @Transactional(readOnly = true)
@@ -89,7 +92,10 @@ public class ProductService {
         Product product = productRepository.findBySlug(slug)
             .filter(Product::isActive)
             .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
-        return ProductMapper.toResponse(product);
+        org.hibernate.Hibernate.initialize(product.getSeller());
+        org.hibernate.Hibernate.initialize(product.getHighlights());
+        org.hibernate.Hibernate.initialize(product.getSpecifications());
+        return ProductMapper.toDetailResponse(product);
     }
 
     @Transactional

@@ -11,11 +11,11 @@ import org.springframework.context.annotation.Configuration;
 public class OpenApiConfig {
 
     @Bean
-    public OpenAPI shopsphereOpenAPI() {
+    public OpenAPI TheBigBazaarOpenAPI() {
         return new OpenAPI()
             .info(new Info()
-                .title("ShopSphere API")
-                .description("REST API for the ShopSphere e-commerce application")
+                .title("TheBigBazaar API")
+                .description("REST API for the TheBigBazaar e-commerce application")
                 .version("v1"))
             .components(new Components()
                 .addSecuritySchemes("bearer-jwt", new SecurityScheme()

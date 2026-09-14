@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentUser, login as loginRequest, logout as logoutRequest, refreshToken as refreshTokenRequest, register as registerRequest } from '../api/authApi';
+import { getCurrentUser, login as loginRequest, logout as logoutRequest, refreshToken as refreshTokenRequest, completeRegistration as completeRegistrationRequest } from '../api/authApi';
 import { clearTokens, getAccessToken, getRefreshToken, setAccessToken, setRefreshToken } from '../../../utils/tokenStorage';
 import { normalizeApiError } from '../../../utils/apiError';
 import LoadingSpinner from '../../../components/common/LoadingSpinner';
@@ -117,8 +117,8 @@ export function AuthProvider({ children }) {
     return response;
   }, []);
 
-  const register = useCallback(async (payload) => {
-    const response = await registerRequest(payload);
+  const completeRegistration = useCallback(async (payload) => {
+    const response = await completeRegistrationRequest(payload);
     setAccessToken(response.accessToken);
     setRefreshToken(response.refreshToken);
     setUser(response.user);
@@ -151,14 +151,14 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(user),
       isLoading,
       login,
-      register,
+      completeRegistration,
       logout,
       refreshAuthentication,
       hasRole,
       isAdmin,
       syncUser,
     }),
-    [user, isLoading, login, register, logout, refreshAuthentication, hasRole, isAdmin, syncUser]
+    [user, isLoading, login, completeRegistration, logout, refreshAuthentication, hasRole, isAdmin, syncUser]
   );
 
   if (isLoading) {

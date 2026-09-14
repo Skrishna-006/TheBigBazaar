@@ -175,6 +175,9 @@ class ProductControllerTest {
             0,
             new ProductCategoryResponse(UUID.fromString("22222222-2222-2222-2222-222222222222"), "Electronics", "electronics"),
             new ProductBrandResponse(UUID.fromString("33333333-3333-3333-3333-333333333333"), "Apple", "apple"),
+            null, // seller
+            java.util.Collections.emptyList(), // highlights
+            java.util.Collections.emptyMap(), // specifications
             "https://example.com/macbook.jpg",
             true,
             Instant.now(),

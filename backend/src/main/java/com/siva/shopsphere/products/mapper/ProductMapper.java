@@ -4,8 +4,14 @@ import com.siva.shopsphere.products.dto.CreateProductRequest;
 import com.siva.shopsphere.products.dto.ProductBrandResponse;
 import com.siva.shopsphere.products.dto.ProductCategoryResponse;
 import com.siva.shopsphere.products.dto.ProductResponse;
+import com.siva.shopsphere.products.dto.ProductSellerResponse;
 import com.siva.shopsphere.products.dto.UpdateProductRequest;
 import com.siva.shopsphere.products.entity.Product;
+import com.siva.shopsphere.sellers.entity.Seller;
+import org.hibernate.Hibernate;
+import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
 
 public final class ProductMapper {
     private ProductMapper() {
@@ -28,6 +34,17 @@ public final class ProductMapper {
     }
 
     public static ProductResponse toResponse(Product product) {
+        ProductSellerResponse sellerResponse = null;
+        if (Hibernate.isInitialized(product.getSeller()) && product.getSeller() != null) {
+            Seller s = product.getSeller();
+            sellerResponse = new ProductSellerResponse(
+                s.getId(), s.getName(), s.getLogoUrl(), s.getRating(), s.getRatingCount(), s.getFollowerCount(), s.getDescription()
+            );
+        }
+
+        List<String> highlights = product.getHighlights() != null ? product.getHighlights() : Collections.emptyList();
+        java.util.Map<String, Object> specs = product.getSpecifications() != null ? product.getSpecifications() : java.util.Collections.emptyMap();
+
         return new ProductResponse(
             product.getId(),
             product.getName(),
@@ -50,6 +67,53 @@ public final class ProductMapper {
                 product.getBrand().getName(),
                 product.getBrand().getSlug()
             ),
+            sellerResponse,
+            highlights,
+            specs,
+            product.getImageUrl(),
+            product.isActive(),
+            product.getCreatedAt(),
+            product.getUpdatedAt()
+        );
+    }
+
+    public static ProductResponse toDetailResponse(Product product) {
+        ProductSellerResponse sellerResponse = null;
+        if (product.getSeller() != null) {
+            Seller s = product.getSeller();
+            sellerResponse = new ProductSellerResponse(
+                s.getId(), s.getName(), s.getLogoUrl(), s.getRating(), s.getRatingCount(), s.getFollowerCount(), s.getDescription()
+            );
+        }
+
+        List<String> highlights = product.getHighlights() != null ? product.getHighlights() : Collections.emptyList();
+        java.util.Map<String, Object> specs = product.getSpecifications() != null ? product.getSpecifications() : java.util.Collections.emptyMap();
+
+        return new ProductResponse(
+            product.getId(),
+            product.getName(),
+            product.getSlug(),
+            product.getSku(),
+            product.getDescription(),
+            product.getPrice(),
+            product.getOriginalPrice(),
+            product.getDeliveryCharge(),
+            product.getDeliveryDays(),
+            product.getRating(),
+            product.getReviewCount(),
+            new ProductCategoryResponse(
+                product.getCategory().getId(),
+                product.getCategory().getName(),
+                product.getCategory().getSlug()
+            ),
+            new ProductBrandResponse(
+                product.getBrand().getId(),
+                product.getBrand().getName(),
+                product.getBrand().getSlug()
+            ),
+            sellerResponse,
+            highlights,
+            specs,
             product.getImageUrl(),
             product.isActive(),
             product.getCreatedAt(),
