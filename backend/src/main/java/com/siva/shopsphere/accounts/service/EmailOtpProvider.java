@@ -22,6 +22,9 @@ public class EmailOtpProvider implements OtpDeliveryService {
     @Value("${spring.mail.username}")
     private String fromEmail;
 
+    @Value("${app.email.log-otp:false}")
+    private boolean logOtp;
+
     public EmailOtpProvider(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
@@ -51,7 +54,11 @@ public class EmailOtpProvider implements OtpDeliveryService {
             logger.info("To: {}", destination);
             logger.info("From: {}", fromEmail);
             logger.info("Subject: {}", subject);
-            logger.info("OTP: {}", rawOtp);
+            if (logOtp) {
+                logger.info("OTP: {}", rawOtp);
+            } else {
+                logger.info("OTP: [HIDDEN]");
+            }
             logger.info("Expires: 5 minutes");
             logger.info("Status: SENDING");
             logger.info("==================================================");

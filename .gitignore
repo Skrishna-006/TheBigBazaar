@@ -3,10 +3,20 @@
 !.env.example
 
 backend/target/
+backend/.m2/
 frontend/node_modules/
 frontend/dist/
 
 *.log
 .DS_Store
 Thumbs.db
-
+.codex-settings.xml
+*.bat
+test-playwright.cjs
+test-puppeteer.cjs
+test_browser.cjs
+test_playwright.cjs
+test_playwright2.cjs
+test_playwright_full.cjs
+test_puppeteer.cjs
+api_response.json

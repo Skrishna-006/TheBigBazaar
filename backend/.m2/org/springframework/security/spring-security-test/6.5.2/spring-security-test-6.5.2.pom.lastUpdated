@@ -1,4 +1,0 @@
-#NOTE: This is a Maven Resolver internal implementation file, its format can be changed without prior notice.
-#Mon Aug 24 10:52:38 IST 2026
-@default-central-https\://repo.maven.apache.org/maven2/.lastUpdated=1787548958249
-https\://repo.maven.apache.org/maven2/.error=Could not transfer artifact org.springframework.security\:spring-security-test\:pom\:6.5.2 from/to central (https\://repo.maven.apache.org/maven2)\: Permission denied\: getsockopt
