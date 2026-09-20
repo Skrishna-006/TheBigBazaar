@@ -2,20 +2,6 @@ server:
   port: ${PORT:8080}
 
 spring:
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_APP_PASSWORD}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-          connectiontimeout: 5000
-          timeout: 5000
-          writetimeout: 5000
   application:
     name: TheBigBazaar
   datasource:
@@ -34,28 +20,24 @@ spring:
     show-sql: false
     generate-ddl: false
 
-otp:
-  delivery: ${OTP_DELIVERY:email}
 
-resend:
-  api-key: ${RESEND_API_KEY:}
-  from-email: ${RESEND_FROM_EMAIL:}
 
-brevo:
-  api-key: ${BREVO_API_KEY:}
-  from-email: ${BREVO_FROM_EMAIL:}
-  from-name: ${BREVO_FROM_NAME:}
+
 
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:5173}
+  email:
+    provider:
+      api-url: ${APP_EMAIL_PROVIDER_API_URL:https://api.resend.com/emails}
+      api-key: ${APP_EMAIL_PROVIDER_API_KEY:}
+      sender-email: ${APP_EMAIL_PROVIDER_SENDER_EMAIL:noreply@thebigbazaar.com}
   payments:
     currency: ${PAYMENT_CURRENCY:INR}
   jwt:
     secret: ${JWT_SECRET:change-me-change-me-change-me-change-me-change-me}
     access-expiration-ms: ${JWT_ACCESS_EXPIRATION:900000}
     refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION:604800000}
-  email:
-    log-otp: ${EMAIL_LOG_OTP:false}
+
 
 # Production deployments should supply DATABASE_URL, DATABASE_USERNAME, and DATABASE_PASSWORD
 # via environment variables and should use database migrations such as Flyway in a later phase.

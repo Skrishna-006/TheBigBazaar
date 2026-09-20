@@ -1,34 +1,20 @@
 import axiosClient from '../../../api/axiosClient';
 
 // === Registration Flow ===
-export async function sendRegistrationOtp(email) {
-  await axiosClient.post('/auth/register/send-otp', { email });
-}
-
-export async function verifyRegistrationOtp(email, otp) {
-  const { data } = await axiosClient.post('/auth/register/verify-otp', { email, otp });
-  return data; // { token }
-}
-
-export async function completeRegistration(payload) {
-  // payload: { email, token, firstName, lastName, password }
-  const { data } = await axiosClient.post('/auth/register/complete', payload);
+export async function register(payload) {
+  // payload: { email, firstName, lastName, password }
+  const { data } = await axiosClient.post('/auth/register', payload);
   return data;
 }
 
 // === Password Reset Flow ===
-export async function sendPasswordResetOtp(email) {
-  await axiosClient.post('/auth/password-reset/send-otp', { email });
+export async function requestPasswordReset(email) {
+  await axiosClient.post('/auth/password-reset/request', { email });
 }
 
-export async function verifyPasswordResetOtp(email, otp) {
-  const { data } = await axiosClient.post('/auth/password-reset/verify-otp', { email, otp });
-  return data; // { token }
-}
-
-export async function completePasswordReset(payload) {
+export async function resetPassword(payload) {
   // payload: { email, token, newPassword }
-  await axiosClient.post('/auth/password-reset/complete', payload);
+  await axiosClient.post('/auth/password-reset/reset', payload);
 }
 
 // === Login & Session ===

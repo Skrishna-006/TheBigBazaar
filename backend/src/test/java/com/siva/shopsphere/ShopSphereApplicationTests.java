@@ -21,7 +21,7 @@ import com.siva.shopsphere.reviews.repository.ProductReviewRepository;
 import com.siva.shopsphere.inventory.service.InventoryService;
 import com.siva.shopsphere.security.CurrentUserService;
 import com.siva.shopsphere.wishlist.repository.WishlistItemRepository;
-import com.siva.shopsphere.accounts.repository.OtpVerificationRepository;
+
 
 @SpringBootTest(properties = {
     "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration"
@@ -78,9 +78,6 @@ class ShopSphereApplicationTests {
 
     @MockBean
     private CurrentUserService currentUserService;
-
-    @MockBean
-    private OtpVerificationRepository otpVerificationRepository;
 
     @Test
     void applicationContextLoads() {

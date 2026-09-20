@@ -60,6 +60,17 @@ public class User {
 
     @Column(nullable = false)
     private Instant updatedAt;
+    @Column(name = "reset_token_hash", length = 255)
+    private String resetTokenHash;
+
+    @Column(name = "reset_token_expiry")
+    private Instant resetTokenExpiry;
+
+    public String getResetTokenHash() { return resetTokenHash; }
+    public void setResetTokenHash(String resetTokenHash) { this.resetTokenHash = resetTokenHash; }
+    public Instant getResetTokenExpiry() { return resetTokenExpiry; }
+    public void setResetTokenExpiry(Instant resetTokenExpiry) { this.resetTokenExpiry = resetTokenExpiry; }
+
 
     @PrePersist
     void onCreate() {

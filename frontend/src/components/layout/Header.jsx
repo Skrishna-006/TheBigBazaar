@@ -1,4 +1,4 @@
-import { NavLink, Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { NavLink, Link, useNavigate, useSearchParams, useLocation } from 'react-router-dom';
 import { useAuth } from '../../features/auth/context/AuthContext';
 import { useState, useRef, useEffect } from 'react';
 import SearchBar from './SearchBar';
@@ -71,6 +71,8 @@ export default function Header() {
   const timeoutRef = useRef(null);
   
   const navigate = useNavigate();
+  const location = useLocation();
+  const hideCategoryNav = location.pathname === '/login' || location.pathname === '/register';
 
   const handleMouseEnter = () => {
     clearTimeout(timeoutRef.current);
@@ -143,7 +145,7 @@ export default function Header() {
             ) : null}
 
             {/* Mobile Categories Accordion */}
-            {mobileMenuOpen && (
+            {mobileMenuOpen && !hideCategoryNav && (
               <CategoryNav mobileMenuOpen={mobileMenuOpen} closeMobileMenu={closeMobileMenu} />
             )}
 
@@ -216,7 +218,7 @@ export default function Header() {
       </div>
       
       {/* Desktop Category Navigation Bar */}
-      <CategoryNav />
+      {!hideCategoryNav && <CategoryNav />}
     </header>
   );
 }
