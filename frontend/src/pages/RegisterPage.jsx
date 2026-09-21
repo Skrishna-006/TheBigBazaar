@@ -143,6 +143,16 @@ export default function RegisterPage() {
         <button className="button button--primary auth-form__submit" type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Creating account...' : 'Register'}
         </button>
+
+        <div style={{ textAlign: 'center', margin: '1rem 0' }}>OR</div>
+
+        <a 
+          href={`${import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api/v1', '') : 'http://localhost:8080'}/oauth2/authorization/google`} 
+          className="button button--outline" 
+          style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}
+        >
+          Continue with Google
+        </a>
       </form>
 
       <p className="auth-card__footer">

@@ -31,6 +31,7 @@ import AdminOrderDetailsPage from '../pages/admin/AdminOrderDetailsPage';
 import PaymentPage from '../pages/PaymentPage';
 import PaymentSuccessPage from '../pages/PaymentSuccessPage';
 import PaymentFailurePage from '../pages/PaymentFailurePage';
+import OAuth2CallbackPage from '../pages/OAuth2CallbackPage';
 
 function Placeholder({ title, message }) {
   return (
@@ -54,6 +55,7 @@ export default function AppRoutes() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
       </Route>
+      <Route path="/oauth2/callback" element={<OAuth2CallbackPage />} />
 
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />

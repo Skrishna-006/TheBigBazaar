@@ -13,11 +13,18 @@ export default function LoginPage() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
   const from = location.state?.from?.pathname || '/products';
 
   const [form, setForm] = useState(initialForm);
   const [fieldErrors, setFieldErrors] = useState({});
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState(
+    searchParams.get('error') === 'OAuth2AccountConflict' 
+      ? 'An account with this email already exists. Please log in with your password.' 
+      : searchParams.get('error') === 'OAuth2MissingInfo'
+      ? 'Google did not provide required information. Please try again.'
+      : ''
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -125,6 +132,16 @@ export default function LoginPage() {
         <button className="button button--primary auth-form__submit" type="submit" disabled={isSubmitting}>
           {isSubmitting ? 'Signing in...' : 'Login'}
         </button>
+
+        <div style={{ textAlign: 'center', margin: '1rem 0' }}>OR</div>
+
+        <a 
+          href={`${import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api/v1', '') : 'http://localhost:8080'}/oauth2/authorization/google`} 
+          className="button button--outline" 
+          style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}
+        >
+          Continue with Google
+        </a>
       </form>
 
       <p className="auth-card__footer">

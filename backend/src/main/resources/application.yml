@@ -19,10 +19,17 @@ spring:
           time_zone: UTC
     show-sql: false
     generate-ddl: false
-
-
-
-
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID:dummy-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:dummy-client-secret}
+            scope:
+              - openid
+              - profile
+              - email
 
 app:
   frontend-url: ${FRONTEND_URL:http://localhost:5173}
@@ -38,9 +45,5 @@ app:
     access-expiration-ms: ${JWT_ACCESS_EXPIRATION:900000}
     refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION:604800000}
 
-
 # Production deployments should supply DATABASE_URL, DATABASE_USERNAME, and DATABASE_PASSWORD
 # via environment variables and should use database migrations such as Flyway in a later phase.
-# PostgreSQL tables are expected to follow snake_case naming via Hibernate's default Spring Boot
-# naming strategy, and future entities will generally use UUID identifiers mapped to PostgreSQL's
-# native uuid type.

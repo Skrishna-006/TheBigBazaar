@@ -30,6 +30,7 @@ import com.siva.shopsphere.exception.ConflictException;
 import com.siva.shopsphere.exception.UnauthorizedException;
 import com.siva.shopsphere.exception.BadRequestException;
 import com.siva.shopsphere.security.JwtService;
+import com.siva.shopsphere.security.OAuth2CodeService;
 
 @Service
 public class AuthService {
@@ -40,15 +41,33 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final PasswordResetEmailService emailService;
+    private final OAuth2CodeService oauth2CodeService;
     private final String frontendUrl;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, PasswordResetEmailService emailService, @org.springframework.beans.factory.annotation.Value("${app.frontend-url}") String frontendUrl) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, JwtService jwtService, PasswordResetEmailService emailService, OAuth2CodeService oauth2CodeService, @org.springframework.beans.factory.annotation.Value("${app.frontend-url}") String frontendUrl) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.authenticationManager = authenticationManager;
         this.jwtService = jwtService;
         this.emailService = emailService;
+        this.oauth2CodeService = oauth2CodeService;
         this.frontendUrl = frontendUrl;
+    }
+
+    @Transactional
+    public AuthResponse exchangeOAuth2Code(String code) {
+        java.util.UUID userId = oauth2CodeService.exchangeCode(code);
+        if (userId == null) {
+            throw new BadRequestException("Invalid or expired authorization code");
+        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new BadRequestException("User not found"));
+        return new AuthResponse(
+            jwtService.generateAccessToken(user),
+            jwtService.generateRefreshToken(user),
+            "Bearer",
+            jwtService.getAccessTokenExpirationSeconds(),
+            UserMapper.toResponse(user)
+        );
     }
 
     @Transactional
@@ -70,6 +89,7 @@ public class AuthService {
         user.setRole(UserRole.CUSTOMER);
         user.setActive(true);
         user.setEmailVerified(false); // Using false or true depending on requirements.
+        user.setAuthProvider(com.siva.shopsphere.accounts.entity.AuthProvider.LOCAL);
         user.setAvatarUrl(null);
 
         user = userRepository.save(user);
@@ -83,6 +103,11 @@ public class AuthService {
         
         if (userOpt.isPresent()) {
             User user = userOpt.get();
+            
+            if (user.getAuthProvider() != com.siva.shopsphere.accounts.entity.AuthProvider.LOCAL) {
+                return;
+            }
+            
             String rawToken = generateRandomToken();
             user.setResetTokenHash(passwordEncoder.encode(rawToken));
             user.setResetTokenExpiry(Instant.now().plus(15, ChronoUnit.MINUTES));
@@ -104,6 +129,10 @@ public class AuthService {
         
         User user = userRepository.findByEmail(email)
             .orElseThrow(() -> new BadRequestException("Invalid reset token or email"));
+            
+        if (user.getAuthProvider() != com.siva.shopsphere.accounts.entity.AuthProvider.LOCAL) {
+            throw new BadRequestException("Invalid reset token or email");
+        }
             
         if (user.getResetTokenHash() == null || user.getResetTokenExpiry() == null) {
             throw new BadRequestException("Invalid reset token or email");

@@ -67,6 +67,16 @@ class AuthControllerTest {
     }
 
     @Test
+    void requestPasswordResetReturnsOkForAnyEmail() throws Exception {
+        mockMvc.perform(post("/api/v1/auth/password-reset/request")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {"email":"any@example.com"}
+                """))
+            .andExpect(status().isOk());
+    }
+
+    @Test
     void meReturnsAuthenticatedUser() throws Exception {
         when(jwtService.isAccessTokenValid("valid-token")).thenReturn(true);
         when(jwtService.extractSubject("valid-token")).thenReturn("9876543210");

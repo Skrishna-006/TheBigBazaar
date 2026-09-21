@@ -54,6 +54,9 @@ class AuthServiceTest {
     @Mock
     private PasswordResetEmailService emailService;
 
+    @Mock
+    private com.siva.shopsphere.security.OAuth2CodeService oauth2CodeService;
+
     private final String frontendUrl = "http://localhost:5173";
 
     private AuthService authService;
@@ -62,7 +65,7 @@ class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        authService = new AuthService(userRepository, passwordEncoder, authenticationManager, jwtService, emailService, frontendUrl);
+        authService = new AuthService(userRepository, passwordEncoder, authenticationManager, jwtService, emailService, oauth2CodeService, frontendUrl);
         sampleUser = new User();
         sampleUser.setId(UUID.randomUUID());
         sampleUser.setPasswordHash("$2a$10$hash");
@@ -125,6 +128,27 @@ class AuthServiceTest {
 
         verify(userRepository, org.mockito.Mockito.never()).save(any(User.class));
         verify(emailService, org.mockito.Mockito.never()).sendPasswordResetEmail(any(), any());
+    }
+
+    @Test
+    void requestPasswordResetIgnoresGoogleUsers() {
+        sampleUser.setAuthProvider(com.siva.shopsphere.accounts.entity.AuthProvider.GOOGLE);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(sampleUser));
+
+        authService.requestPasswordReset(new PasswordResetRequest("user@example.com"));
+
+        verify(userRepository, org.mockito.Mockito.never()).save(any(User.class));
+        verify(emailService, org.mockito.Mockito.never()).sendPasswordResetEmail(any(), any());
+    }
+
+    @Test
+    void resetPasswordFailsForGoogleUsers() {
+        sampleUser.setAuthProvider(com.siva.shopsphere.accounts.entity.AuthProvider.GOOGLE);
+        when(userRepository.findByEmail("user@example.com")).thenReturn(Optional.of(sampleUser));
+
+        assertThatThrownBy(() -> authService.resetPassword(new CompletePasswordResetRequest("user@example.com", "rawToken", "NewPassword@123")))
+            .isInstanceOf(BadRequestException.class)
+            .hasMessage("Invalid reset token or email");
     }
     
     @Test

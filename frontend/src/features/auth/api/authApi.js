@@ -17,6 +17,11 @@ export async function resetPassword(payload) {
   await axiosClient.post('/auth/password-reset/reset', payload);
 }
 
+export async function exchangeOAuth2Code(code) {
+  const { data } = await axiosClient.post('/auth/oauth2/exchange', { code });
+  return data;
+}
+
 // === Login & Session ===
 export async function login(payload) {
   // payload: { email, password }

@@ -69,4 +69,9 @@ public class AuthController {
     public ResponseEntity<UserResponse> me() {
         return ResponseEntity.ok(userService.getCurrentUser());
     }
+
+    @PostMapping("/oauth2/exchange")
+    public ResponseEntity<AuthResponse> exchangeOAuth2Code(@Valid @RequestBody com.siva.shopsphere.accounts.dto.OAuth2ExchangeRequest request) {
+        return ResponseEntity.ok(authService.exchangeOAuth2Code(request.code()));
+    }
 }

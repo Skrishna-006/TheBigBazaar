@@ -66,6 +66,13 @@ public class User {
     @Column(name = "reset_token_expiry")
     private Instant resetTokenExpiry;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "auth_provider", nullable = false, length = 20)
+    private AuthProvider authProvider = AuthProvider.LOCAL;
+
+    @Column(name = "google_subject", length = 255, unique = true)
+    private String googleSubject;
+
     public String getResetTokenHash() { return resetTokenHash; }
     public void setResetTokenHash(String resetTokenHash) { this.resetTokenHash = resetTokenHash; }
     public Instant getResetTokenExpiry() { return resetTokenExpiry; }
@@ -173,5 +180,21 @@ public class User {
 
     public Instant getUpdatedAt() {
         return updatedAt;
+    }
+
+    public AuthProvider getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(AuthProvider authProvider) {
+        this.authProvider = authProvider;
+    }
+
+    public String getGoogleSubject() {
+        return googleSubject;
+    }
+
+    public void setGoogleSubject(String googleSubject) {
+        this.googleSubject = googleSubject;
     }
 }
